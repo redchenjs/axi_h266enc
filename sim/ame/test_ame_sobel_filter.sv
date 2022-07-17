@@ -1,5 +1,5 @@
 /*
- * test_ame_sobel_block.sv
+ * test_ame_sobel_filter.sv
  *
  *  Created on: 2022-07-17 16:50
  *      Author: Jack Chen <redchenjs@live.com>
@@ -7,7 +7,7 @@
 
 `timescale 1 ns / 1 ps
 
-module test_ame_sobel_block;
+module test_ame_sobel_filter;
 
 parameter LINE_DATA_BITS = 7;
 parameter COMP_DATA_BITS = 8;
@@ -26,10 +26,10 @@ logic [5:0] [LINE_DATA_BITS-1:0] line_data_i;
 // 4 x 4 = 16 Results
 logic [3:0] [3:0] [COMP_DATA_BITS-1:0] comp_data_o;
 
-ame_sobel_block #(
+ame_sobel_filter #(
     .LINE_DATA_BITS(LINE_DATA_BITS),
     .COMP_DATA_BITS(COMP_DATA_BITS)
-) ame_sobel_block (
+) ame_sobel_filter (
     .clk_i(clk_i),
     .rst_n_i(rst_n_i),
 

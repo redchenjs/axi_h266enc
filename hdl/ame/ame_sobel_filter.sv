@@ -1,5 +1,5 @@
 /*
- * ame_sobel_block.sv
+ * ame_sobel_filter.sv
  *
  *  Created on: 2022-07-16 22:07
  *      Author: Jack Chen <redchenjs@live.com>
@@ -7,7 +7,7 @@
 
 `timescale 1 ns / 1 ps
 
-module ame_sobel_block #(
+module ame_sobel_filter #(
     parameter LINE_DATA_BITS = 7,
     parameter COMP_DATA_BITS = 8
 ) (

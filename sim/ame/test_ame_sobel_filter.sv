@@ -42,6 +42,9 @@ ame_sobel_filter #(
 );
 
 initial begin
+    $dumpfile("test_ame_sobel_filter.vcd");
+    $dumpvars(0, test_ame_sobel_filter);
+
     clk_i   <= 1'b1;
     rst_n_i <= 1'b0;
 

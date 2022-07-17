@@ -9,6 +9,9 @@
 
 module test_ame_sobel_block;
 
+parameter LINE_DATA_BITS = 7;
+parameter COMP_DATA_BITS = 8;
+
 logic clk_i;
 logic rst_n_i;
 
@@ -24,8 +27,8 @@ logic [5:0] [LINE_DATA_BITS-1:0] line_data_i;
 logic [3:0] [3:0] [COMP_DATA_BITS-1:0] comp_data_o;
 
 ame_sobel_block #(
-    .LINE_DATA_BITS(8),
-    .COMP_DATA_BITS(8)
+    .LINE_DATA_BITS(LINE_DATA_BITS),
+    .COMP_DATA_BITS(COMP_DATA_BITS)
 ) ame_sobel_block (
     .clk_i(clk_i),
     .rst_n_i(rst_n_i),
@@ -56,12 +59,13 @@ always begin
     // DUMMY DATA
     for (integer i = 0; i < 8; i++) begin
         #5 comp_init_i <= 1'b1;
-           line_data_i <= $random;
+           line_data_i <= {$random, $random};
 
         #5 comp_init_i <= 1'b0;
-           line_data_i <= $random;
+           line_data_i <= {$random, $random};
+
         for (integer j = 0; j < 4; j++) begin
-            #5 line_data_i <= $random;
+            #5 line_data_i <= {$random, $random};
         end
     end
 

@@ -8,7 +8,7 @@
 `timescale 1 ns / 1 ps
 
 module ame_sobel_block #(
-    parameter LINE_DATA_BITS = 8,
+    parameter LINE_DATA_BITS = 7,
     parameter COMP_DATA_BITS = 8
 ) (
     input logic clk_i,
@@ -38,7 +38,7 @@ typedef enum logic [2:0] {
 
 state_t ctl_sta;
 
-logic [1:0] [5:0] [COMP_DATA_BITS-1:0] line_data;
+logic [5:0] [1:0] [COMP_DATA_BITS-1:0] line_data;
 logic [3:0] [3:0] [COMP_DATA_BITS-1:0] comp_data;
 
 typedef enum logic {
@@ -80,7 +80,7 @@ begin
             COMP_5:
                 ctl_sta <= COMP_6;
             COMP_6:
-                ctl_sta <= IDLE;
+                ctl_sta <= comp_init_i ? COMP_1 : IDLE;
             default:
                 ctl_sta <= IDLE;
         endcase
@@ -91,16 +91,16 @@ begin
             IDLE:
                 comp_data <= 'b0;
             COMP_1: begin
-                comp_data[0][0] <= comp_data[0][0] - line_data[0][DATA_1] - line_data[1][DATA_2] - line_data[2][DATA_1];
-                comp_data[1][0] <= comp_data[1][0] - line_data[1][DATA_1] - line_data[2][DATA_2] - line_data[3][DATA_1];
-                comp_data[2][0] <= comp_data[2][0] - line_data[2][DATA_1] - line_data[3][DATA_2] - line_data[4][DATA_1];
-                comp_data[3][0] <= comp_data[3][0] - line_data[3][DATA_1] - line_data[4][DATA_2] - line_data[5][DATA_1];
+                comp_data[0][0] <= - line_data[0][DATA_1] - line_data[1][DATA_2] - line_data[2][DATA_1];
+                comp_data[1][0] <= - line_data[1][DATA_1] - line_data[2][DATA_2] - line_data[3][DATA_1];
+                comp_data[2][0] <= - line_data[2][DATA_1] - line_data[3][DATA_2] - line_data[4][DATA_1];
+                comp_data[3][0] <= - line_data[3][DATA_1] - line_data[4][DATA_2] - line_data[5][DATA_1];
             end
             COMP_2: begin
-                comp_data[0][1] <= comp_data[0][1] - line_data[0][DATA_1] - line_data[1][DATA_2] - line_data[2][DATA_1];
-                comp_data[1][1] <= comp_data[1][1] - line_data[1][DATA_1] - line_data[2][DATA_2] - line_data[3][DATA_1];
-                comp_data[2][1] <= comp_data[2][1] - line_data[2][DATA_1] - line_data[3][DATA_2] - line_data[4][DATA_1];
-                comp_data[3][1] <= comp_data[3][1] - line_data[3][DATA_1] - line_data[4][DATA_2] - line_data[5][DATA_1];
+                comp_data[0][1] <= - line_data[0][DATA_1] - line_data[1][DATA_2] - line_data[2][DATA_1];
+                comp_data[1][1] <= - line_data[1][DATA_1] - line_data[2][DATA_2] - line_data[3][DATA_1];
+                comp_data[2][1] <= - line_data[2][DATA_1] - line_data[3][DATA_2] - line_data[4][DATA_1];
+                comp_data[3][1] <= - line_data[3][DATA_1] - line_data[4][DATA_2] - line_data[5][DATA_1];
             end
             COMP_3: begin
                 comp_data[0][0] <= comp_data[0][0] + line_data[0][DATA_1] + line_data[1][DATA_2] + line_data[2][DATA_1];
@@ -108,10 +108,10 @@ begin
                 comp_data[2][0] <= comp_data[2][0] + line_data[2][DATA_1] + line_data[3][DATA_2] + line_data[4][DATA_1];
                 comp_data[3][0] <= comp_data[3][0] + line_data[3][DATA_1] + line_data[4][DATA_2] + line_data[5][DATA_1];
 
-                comp_data[0][2] <= comp_data[0][2] - line_data[0][DATA_1] - line_data[1][DATA_2] - line_data[2][DATA_1];
-                comp_data[1][2] <= comp_data[1][2] - line_data[1][DATA_1] - line_data[2][DATA_2] - line_data[3][DATA_1];
-                comp_data[2][2] <= comp_data[2][2] - line_data[2][DATA_1] - line_data[3][DATA_2] - line_data[4][DATA_1];
-                comp_data[3][2] <= comp_data[3][2] - line_data[3][DATA_1] - line_data[4][DATA_2] - line_data[5][DATA_1];
+                comp_data[0][2] <= - line_data[0][DATA_1] - line_data[1][DATA_2] - line_data[2][DATA_1];
+                comp_data[1][2] <= - line_data[1][DATA_1] - line_data[2][DATA_2] - line_data[3][DATA_1];
+                comp_data[2][2] <= - line_data[2][DATA_1] - line_data[3][DATA_2] - line_data[4][DATA_1];
+                comp_data[3][2] <= - line_data[3][DATA_1] - line_data[4][DATA_2] - line_data[5][DATA_1];
             end
             COMP_4: begin
                 comp_data[0][1] <= comp_data[0][1] + line_data[0][DATA_1] + line_data[1][DATA_2] + line_data[2][DATA_1];
@@ -119,10 +119,10 @@ begin
                 comp_data[2][1] <= comp_data[2][1] + line_data[2][DATA_1] + line_data[3][DATA_2] + line_data[4][DATA_1];
                 comp_data[3][1] <= comp_data[3][1] + line_data[3][DATA_1] + line_data[4][DATA_2] + line_data[5][DATA_1];
 
-                comp_data[0][3] <= comp_data[0][3] - line_data[0][DATA_1] - line_data[1][DATA_2] - line_data[2][DATA_1];
-                comp_data[1][3] <= comp_data[1][3] - line_data[1][DATA_1] - line_data[2][DATA_2] - line_data[3][DATA_1];
-                comp_data[2][3] <= comp_data[2][3] - line_data[2][DATA_1] - line_data[3][DATA_2] - line_data[4][DATA_1];
-                comp_data[3][3] <= comp_data[3][3] - line_data[3][DATA_1] - line_data[4][DATA_2] - line_data[5][DATA_1];
+                comp_data[0][3] <= - line_data[0][DATA_1] - line_data[1][DATA_2] - line_data[2][DATA_1];
+                comp_data[1][3] <= - line_data[1][DATA_1] - line_data[2][DATA_2] - line_data[3][DATA_1];
+                comp_data[2][3] <= - line_data[2][DATA_1] - line_data[3][DATA_2] - line_data[4][DATA_1];
+                comp_data[3][3] <= - line_data[3][DATA_1] - line_data[4][DATA_2] - line_data[5][DATA_1];
             end
             COMP_5: begin
                 comp_data[0][2] <= comp_data[0][2] + line_data[0][DATA_1] + line_data[1][DATA_2] + line_data[2][DATA_1];

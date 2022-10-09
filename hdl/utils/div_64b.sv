@@ -1,17 +1,24 @@
 /*
- * pri_8b.sv
+ * div_64b.sv
  *
- *  Created on: 2022-08-31 22:55
+ *  Created on: 2022-10-09 15:33
  *      Author: Jack Chen <redchenjs@live.com>
  */
 
 `timescale 1 ns / 1 ps
 
-module pri_8b(
+module div_64b(
+    input logic clk_i,
     input logic rst_n_i,
 
-    input  logic [7:0] data_i,
-    output logic [7:0] data_o
+    input  logic init_i,
+    output logic done_o,
+
+    input logic [63:0] divided_i,
+    input logic [63:0] divisor_i,
+
+    output logic [63:0] quotient_o,
+    output logic [63:0] remainder_o
 );
 
 always_comb begin

@@ -17,12 +17,9 @@ logic rst_n_i;
 logic comp_init_i;
 logic comp_done_o;
 
-// 64-bit Integer Input & Output
-logic [COMP_DATA_BITS-1:0] comp_data_i;
-logic [COMP_DATA_BITS-1:0] comp_data_o;
-
-// Data MSB Sign
-logic comp_data_sign_o;
+// 64-bit Integer Input & 6-bit Integer Output
+logic         [COMP_DATA_BITS-1:0] comp_data_i;
+logic [$clog2(COMP_DATA_BITS)-1:0] comp_data_o;
 
 ame_num_approx #(
     .COMP_DATA_BITS(COMP_DATA_BITS)
@@ -34,9 +31,7 @@ ame_num_approx #(
     .comp_done_o(comp_done_o),
 
     .comp_data_i(comp_data_i),
-    .comp_data_o(comp_data_o),
-
-    .comp_data_sign_o(comp_data_sign_o)
+    .comp_data_o(comp_data_o)
 );
 
 initial begin

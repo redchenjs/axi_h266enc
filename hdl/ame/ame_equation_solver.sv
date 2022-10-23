@@ -47,18 +47,30 @@ typedef enum logic [2:0] {
 
 state_t ctl_sta;
 
-logic [5:0] [6:0] comp_init;
-logic       [2:0] comp_loop;
-logic             comp_done;
+logic       comp_init;
+logic       comp_done;
+logic [2:0] comp_loop;
 
-logic     [COMP_DATA_BITS-1:0] comp_data_m;
-logic [COMP_DATA_IDX_BITS-1:0] comp_data_m_index;
-logic     [COMP_DATA_BITS-1:0] comp_data_m_approx;
-logic                          comp_data_m_approx_sign;
+logic             [COMP_DATA_BITS-1:0] comp_data_m;
+logic     [$clog2(COMP_DATA_BITS)-1:0] comp_data_m_shift;
 
-logic [5:0] [6:0] [COMP_DATA_BITS-1:0] comp_data_compute;
-logic [5:0] [6:0] [COMP_DATA_BITS-1:0] comp_data_normal;
-logic       [5:0] [COMP_DATA_BITS-1:0] comp_data_divide;
+logic                            [5:0] comp_data_m_mask;
+logic         [COMP_DATA_IDX_BITS-1:0] comp_data_m_index;
+logic   [5:0] [COMP_DATA_IDX_BITS-1:0] comp_data_m_index_mux;
+
+logic [5:0] [6:0] [COMP_DATA_BITS-1:0] comp_data_p;
+
+logic                      [5:0] [6:0] comp_init_c;
+logic [5:0] [6:0] [COMP_DATA_BITS-1:0] comp_data_c;
+
+logic [5:0] [6:0] [COMP_DATA_BITS-1:0] comp_data_n;
+
+logic                                  comp_init_d;
+logic                            [5:0] comp_done_d;
+logic       [5:0] [COMP_DATA_BITS-1:0] comp_data_d;
+
+assign comp_data_p = comp_init ? comp_data_i : comp_data_n;
+assign comp_done_o = comp_done;
 
 ame_num_compare #(
     .COMP_DATA_BITS(64),
@@ -67,18 +79,19 @@ ame_num_compare #(
     .clk_i(clk_i),
     .rst_n_i(rst_n_i),
 
-    .comp_init_i('b1),
+    .comp_init_i(1'b1),
     .comp_done_o(),
 
-    .comp_data_i({ comp_data_i[5][comp_loop],
-                   comp_data_i[4][comp_loop],
-                   comp_data_i[3][comp_loop],
-                   comp_data_i[2][comp_loop],
-                   comp_data_i[1][comp_loop],
-                   comp_data_i[0][comp_loop] }),
+    .comp_data_i({ comp_data_p[5][comp_loop],
+                   comp_data_p[4][comp_loop],
+                   comp_data_p[3][comp_loop],
+                   comp_data_p[2][comp_loop],
+                   comp_data_p[1][comp_loop],
+                   comp_data_p[0][comp_loop] }),
     .comp_data_o(comp_data_m),
 
-    .comp_data_idx_o(comp_data_m_index)
+    .comp_data_mask_i(comp_data_m_mask),
+    .comp_data_index_o(comp_data_m_index)
 );
 
 ame_num_approx #(
@@ -91,18 +104,16 @@ ame_num_approx #(
     .comp_done_o(),
 
     .comp_data_i(comp_data_m),
-    .comp_data_o(comp_data_m_approx),
-
-    .comp_data_sign_o(comp_data_m_approx_sign)
+    .comp_data_o(comp_data_m_shift)
 );
 
 generate
     for (genvar i = 0; i < 6; i++) begin
         for (genvar j = 0; j < 7; j++) begin
             wire [COMP_DATA_BITS-1:0] M = comp_data_m;
-            wire [COMP_DATA_BITS-1:0] D = comp_data_i[i][j];
-            wire [COMP_DATA_BITS-1:0] L = comp_data_i[i][comp_loop];
-            wire [COMP_DATA_BITS-1:0] C = comp_data_i[comp_data_m_index][j];
+            wire [COMP_DATA_BITS-1:0] D = comp_data_p[i][j];
+            wire [COMP_DATA_BITS-1:0] L = comp_data_p[i][comp_loop];
+            wire [COMP_DATA_BITS-1:0] C = comp_data_p[comp_data_m_index][j];
 
             ame_num_compute #(
                 .COMP_DATA_BITS(64)
@@ -110,11 +121,11 @@ generate
                 .clk_i(clk_i),
                 .rst_n_i(rst_n_i),
 
-                .comp_init_i(comp_init[i][j]),
+                .comp_init_i(comp_init_c[i][j]),
                 .comp_done_o(),
 
                 .comp_data_i({M, D, L, C}),
-                .comp_data_o(comp_data_compute[i][j])
+                .comp_data_o(comp_data_c[i][j])
             );
 
             ame_num_normal #(
@@ -123,30 +134,47 @@ generate
                 .clk_i(clk_i),
                 .rst_n_i(rst_n_i),
 
-                .comp_init_i(comp_init[i][j]),
+                .comp_init_i(comp_init_c[i][j]),
                 .comp_done_o(),
 
-                .num_approx_i(comp_data_m_approx),
-                .num_approx_sign_i(comp_data_m_approx_sign),
+                .comp_shift_i(comp_data_m_shift),
 
-                .comp_data_i(comp_data_compute[i][j]),
-                .comp_data_o(comp_data_normal[i][j])
+                .comp_data_i(comp_data_c[i][j]),
+                .comp_data_o(comp_data_n[i][j])
             );
         end
+
+        ame_num_divide #(
+            .COMP_DATA_BITS(64)
+        ) ame_num_divide (
+            .clk_i(clk_i),
+            .rst_n_i(rst_n_i),
+
+            .comp_init_i(comp_init_d),
+            .comp_done_o(comp_done_d[i]),
+
+            .comp_data_i({comp_data_n[i][i], comp_data_n[i][6]}),
+            .comp_data_o(comp_data_d[i])
+        );
+
+        assign comp_data_o[i] = comp_data_d[i];
     end
 endgenerate
-
-assign comp_done_o = comp_done;
-assign comp_data_o = comp_data_divide;
 
 always_ff @(posedge clk_i or negedge rst_n_i)
 begin
     if (!rst_n_i) begin
         ctl_sta <= IDLE;
 
-        comp_init <= 'd0;
+        comp_init <= 'b0;
+        comp_done <= 'b0;
         comp_loop <= 'd0;
-        comp_done <= 'd0;
+
+        comp_init_c <= 'd0;
+        comp_init_d <= 'd0;
+
+        comp_data_m_mask      <= 'd0;
+        comp_data_m_index_mux <= 'd0;
     end else begin
         case (ctl_sta)
             IDLE:
@@ -154,52 +182,102 @@ begin
             PIVOT:
                 ctl_sta <= COMPUTE;
             COMPUTE:
-                ctl_sta <= NORMAL;
+                ctl_sta <= ~|comp_data_m ? IDLE : NORMAL;
             NORMAL:
                 ctl_sta <= (comp_loop == 'd5) ? DIVIDE : PIVOT;
             DIVIDE:
-                ctl_sta <= IDLE;
+                ctl_sta <= &comp_done_d ? IDLE : DIVIDE;
             default:
                 ctl_sta <= IDLE;
         endcase
 
         case (ctl_sta)
             IDLE: begin
-                comp_init <= 'b0;
+                comp_init <= comp_init_i ? 1'b1 : 1'b0;
                 comp_loop <= affine_param6_i ? 'd0 : 'd2;
+
+                comp_init_c <= 'b0;
+                comp_init_d <= 'b0;
+
+                comp_data_m_mask      <= comp_data_m_mask;
+                comp_data_m_index_mux <= comp_data_m_index_mux;
             end
             PIVOT: begin
+                comp_init <= comp_init;
+                comp_loop <= comp_loop;
+
                 for (int i = 0; i < 6; i++) begin
                     for (int j = 0; j < 7; j++) begin
                         if (i[COMP_DATA_IDX_BITS-1:0] == comp_data_m_index) begin
-                            comp_init[i][j] <= 1'b0;
+                            comp_init_c[i][j] <= 1'b0;
                         end else begin
-                            comp_init[i][j] <= 1'b1;
+                            comp_init_c[i][j] <= 1'b1;
                         end
                     end
                 end
 
-                comp_loop <= comp_loop;
+                comp_data_m_mask      <= comp_data_m_mask;
+                comp_data_m_index_mux <= comp_data_m_index_mux;
             end
             COMPUTE: begin
-                comp_init <= comp_init;
+                comp_init <= 'b0;
                 comp_loop <= comp_loop;
+
+                comp_init_c <= comp_init_c;
+                comp_init_d <= comp_init_d;
+
+                case (comp_data_m_index)
+                    'd0:
+                        comp_data_m_mask <= comp_data_m_mask | 6'b00_0001;
+                    'd1:
+                        comp_data_m_mask <= comp_data_m_mask | 6'b00_0010;
+                    'd2:
+                        comp_data_m_mask <= comp_data_m_mask | 6'b00_0100;
+                    'd3:
+                        comp_data_m_mask <= comp_data_m_mask | 6'b00_1000;
+                    'd4:
+                        comp_data_m_mask <= comp_data_m_mask | 6'b01_0000;
+                    'd5:
+                        comp_data_m_mask <= comp_data_m_mask | 6'b10_0000;
+                    default:
+                        comp_data_m_mask <= comp_data_m_mask;
+                endcase
+
+                comp_data_m_index_mux[comp_loop] <= comp_data_m_index;
             end
             NORMAL: begin
                 comp_init <= 'b0;
                 comp_loop <= (comp_loop == 'd5) ? 'd0 : comp_loop + 'b1;
+
+                comp_init_c <= 'b0;
+                comp_init_d <= (comp_loop == 'd5) ? 'b1 : 'b0;
+
+                comp_data_m_mask      <= comp_data_m_mask;
+                comp_data_m_index_mux <= comp_data_m_index_mux;
             end
             DIVIDE: begin
                 comp_init <= 'b0;
                 comp_loop <= 'd0;
+
+                comp_init_c <= 'b0;
+                comp_init_d <= 'b0;
+
+                comp_data_m_mask      <= comp_data_m_mask;
+                comp_data_m_index_mux <= comp_data_m_index_mux;
             end
             default: begin
                 comp_init <= 'b0;
                 comp_loop <= 'd0;
+
+                comp_init_c <= 'b0;
+                comp_init_d <= 'b0;
+
+                comp_data_m_mask      <= comp_data_m_mask;
+                comp_data_m_index_mux <= comp_data_m_index_mux;
             end
         endcase
 
-        comp_done <= (ctl_sta == DIVIDE);
+        comp_done <= ((ctl_sta == COMPUTE) & ~|comp_data_m) | ((ctl_sta == DIVIDE) & &comp_done_d);
     end
 end
 

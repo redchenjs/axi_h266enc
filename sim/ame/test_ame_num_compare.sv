@@ -1,13 +1,13 @@
 /*
- * test_ame_num_divide.sv
+ * test_ame_num_compare.sv
  *
- *  Created on: 2022-09-18 01:12
+ *  Created on: 2022-09-15 18:10
  *      Author: Jack Chen <redchenjs@live.com>
  */
 
 `timescale 1 ns / 1 ps
 
-module test_ame_num_divide;
+module test_ame_num_compare;
 
 parameter COMP_DATA_BITS = 64;
 parameter COMP_DATA_IDX_BITS = 3;
@@ -18,17 +18,20 @@ logic rst_n_i;
 logic comp_init_i;
 logic comp_done_o;
 
-// 5 Integer Input
+// 5 Integer Input & 1 Data Output
 logic [5:0] [COMP_DATA_BITS-1:0] comp_data_i;
+logic       [COMP_DATA_BITS-1:0] comp_data_o;
 
-// 1 Data & 1 Index Output
-logic     [COMP_DATA_BITS-1:0] comp_data_o;
-logic [COMP_DATA_IDX_BITS-1:0] comp_data_idx_o;
+// Data Mask Input: Mask Bits
+logic [5:0] comp_data_mask_i;
 
-ame_num_divide #(
+// Data Index Output: Row Index
+logic [COMP_DATA_IDX_BITS-1:0] comp_data_index_o;
+
+ame_num_compare #(
     .COMP_DATA_BITS(COMP_DATA_BITS),
     .COMP_DATA_IDX_BITS(COMP_DATA_IDX_BITS)
-) ame_num_divide (
+) ame_num_compare (
     .clk_i(clk_i),
     .rst_n_i(rst_n_i),
 
@@ -38,7 +41,8 @@ ame_num_divide #(
     .comp_data_i(comp_data_i),
     .comp_data_o(comp_data_o),
 
-    .comp_data_idx_o(comp_data_idx_o)
+    .comp_data_mask_i(comp_data_mask_i),
+    .comp_data_index_o(comp_data_index_o)
 );
 
 initial begin
@@ -50,6 +54,8 @@ initial begin
 
     comp_init_i = 'b0;
     comp_data_i = 'b0;
+
+    comp_data_mask_i = 'b0;
 
     #2 rst_n_i = 1'b1;
 end
@@ -63,9 +69,10 @@ always begin
 
     // DUMMY DATA
     for (integer i = 0; i < 64; i++) begin
-        #5 comp_data_i  = { $random, $random, $random, $random,
-                            $random, $random, $random, $random,
-                            $random, $random, $random, $random };
+        #5 comp_data_i = { $random, $random, $random, $random,
+                           $random, $random, $random, $random,
+                           $random, $random, $random, $random };
+           comp_data_mask_i = i % 6;
     end
 
     #5 comp_init_i = 1'b0;

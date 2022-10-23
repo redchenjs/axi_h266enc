@@ -1,13 +1,13 @@
 /*
- * test_ame_num_compare.sv
+ * test_ame_num_divide.sv
  *
- *  Created on: 2022-09-15 18:10
+ *  Created on: 2022-09-18 01:12
  *      Author: Jack Chen <redchenjs@live.com>
  */
 
 `timescale 1 ns / 1 ps
 
-module test_ame_num_compare;
+module test_ame_num_divide;
 
 parameter COMP_DATA_BITS = 64;
 parameter COMP_DATA_IDX_BITS = 3;
@@ -25,10 +25,10 @@ logic [5:0] [COMP_DATA_BITS-1:0] comp_data_i;
 logic     [COMP_DATA_BITS-1:0] comp_data_o;
 logic [COMP_DATA_IDX_BITS-1:0] comp_data_idx_o;
 
-ame_num_compare #(
+ame_num_divide #(
     .COMP_DATA_BITS(COMP_DATA_BITS),
     .COMP_DATA_IDX_BITS(COMP_DATA_IDX_BITS)
-) ame_num_compare (
+) ame_num_divide (
     .clk_i(clk_i),
     .rst_n_i(rst_n_i),
 

@@ -21,23 +21,34 @@ module ame_num_compare #(
     input  logic [5:0] [COMP_DATA_BITS-1:0] comp_data_i,
     output logic       [COMP_DATA_BITS-1:0] comp_data_o,
 
+    // Data Mask Input: Mask Bits
+    input logic [5:0] comp_data_mask_i,
+
     // Data Index Output: Row Index
-    output logic [COMP_DATA_IDX_BITS-1:0] comp_data_idx_o
+    output logic [COMP_DATA_IDX_BITS-1:0] comp_data_index_o
 );
 
-wire MAX_0_1 = ($signed(comp_data_i[0]) > $signed(comp_data_i[1]));
-wire MAX_2_3 = ($signed(comp_data_i[2]) > $signed(comp_data_i[3]));
-wire MAX_4_5 = ($signed(comp_data_i[4]) > $signed(comp_data_i[5]));
+wire [5:0] [COMP_DATA_BITS-1:0] comp_data;
 
-wire MAX_A = (D_MAX_0_1 > D_MAX_2_3);
-wire MAX_B = (D_MAX_A   > D_MAX_4_5);
+generate
+    for (genvar i = 0; i < 6; i++) begin
+        assign comp_data[i] = comp_data_mask_i[i] ? 'b0 : (comp_data_i[i][COMP_DATA_BITS-1] ? -comp_data_i[i] : comp_data_i[i]);
+    end
+endgenerate
 
-wire [COMP_DATA_BITS-1:0] D_MAX_0_1 = MAX_0_1 ? comp_data_i[0] : comp_data_i[1];
-wire [COMP_DATA_BITS-1:0] D_MAX_2_3 = MAX_2_3 ? comp_data_i[2] : comp_data_i[3];
-wire [COMP_DATA_BITS-1:0] D_MAX_4_5 = MAX_4_5 ? comp_data_i[4] : comp_data_i[5];
+wire MAX_0_1 = (comp_data[0] > comp_data[1]);
+wire MAX_2_3 = (comp_data[2] > comp_data[3]);
+wire MAX_4_5 = (comp_data[4] > comp_data[5]);
 
+wire [COMP_DATA_BITS-1:0] D_MAX_0_1 = MAX_0_1 ? comp_data[0] : comp_data[1];
+wire [COMP_DATA_BITS-1:0] D_MAX_2_3 = MAX_2_3 ? comp_data[2] : comp_data[3];
+wire [COMP_DATA_BITS-1:0] D_MAX_4_5 = MAX_4_5 ? comp_data[4] : comp_data[5];
+
+wire                        MAX_A = (D_MAX_0_1 > D_MAX_2_3);
 wire [COMP_DATA_BITS-1:0] D_MAX_A = MAX_A ? D_MAX_0_1 : D_MAX_2_3;
-wire [COMP_DATA_BITS-1:0] D_MAX_B = MAX_B ? D_MAX_A   : D_MAX_4_5;
+
+wire                        MAX_B = (D_MAX_A > D_MAX_4_5);
+wire [COMP_DATA_BITS-1:0] D_MAX_B = MAX_B ? D_MAX_A : D_MAX_4_5;
 
 wire [COMP_DATA_IDX_BITS-1:0] I_MAX_0_1 = MAX_0_1 ? 'd0 : 'd1;
 wire [COMP_DATA_IDX_BITS-1:0] I_MAX_2_3 = MAX_2_3 ? 'd2 : 'd3;
@@ -49,13 +60,13 @@ wire [COMP_DATA_IDX_BITS-1:0] I_MAX_B = MAX_B ? I_MAX_A   : I_MAX_4_5;
 always_ff @(posedge clk_i or negedge rst_n_i)
 begin
     if (!rst_n_i) begin
-        comp_done_o     <= 'b0;
-        comp_data_o     <= 'b0;
-        comp_data_idx_o <= 'b0;
+        comp_done_o       <= 'b0;
+        comp_data_o       <= 'b0;
+        comp_data_index_o <= 'b0;
     end else begin
-        comp_done_o     <= comp_init_i;
-        comp_data_o     <= comp_init_i ? D_MAX_B : 'b0;
-        comp_data_idx_o <= comp_init_i ? I_MAX_B : 'b0;
+        comp_done_o       <= comp_init_i;
+        comp_data_o       <= comp_init_i ? D_MAX_B : comp_data_o;
+        comp_data_index_o <= comp_init_i ? I_MAX_B : comp_data_index_o;
     end
 end
 

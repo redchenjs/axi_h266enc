@@ -35,7 +35,7 @@ begin
         comp_data_o <= 'b0;
     end else begin
         comp_done_o <= comp_init_i;
-        comp_data_o <= comp_init_i ? comp_data : 'b0;
+        comp_data_o <= comp_init_i ? comp_data : comp_data_i[2];
     end
 end
 

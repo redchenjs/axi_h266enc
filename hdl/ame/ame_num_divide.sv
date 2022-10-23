@@ -16,27 +16,23 @@ module ame_num_divide #(
     input  logic comp_init_i,
     output logic comp_done_o,
 
-    // 4 Integer Input: [3:0] => {M, D, L, C}
-    input  logic [3:0] [COMP_DATA_BITS-1:0] comp_data_i,
+    // 2 Integer Input: [1:0] => {divisor, dividend}
+    input  logic [1:0] [COMP_DATA_BITS-1:0] comp_data_i,
     output logic       [COMP_DATA_BITS-1:0] comp_data_o
 );
 
-wire [COMP_DATA_BITS-1:0] M = comp_data_i[3];
-wire [COMP_DATA_BITS-1:0] D = comp_data_i[2];
-wire [COMP_DATA_BITS-1:0] L = comp_data_i[1];
-wire [COMP_DATA_BITS-1:0] C = comp_data_i[0];
+div_64b div_64b(
+    .clk_i(clk_i),
+    .rst_n_i(rst_n_i),
 
-wire [COMP_DATA_BITS-1:0] comp_data = M * D - L * C;
+    .init_i(comp_init_i),
+    .done_o(comp_done_o),
 
-always_ff @(posedge clk_i or negedge rst_n_i)
-begin
-    if (!rst_n_i) begin
-        comp_done_o <= 'b0;
-        comp_data_o <= 'b0;
-    end else begin
-        comp_done_o <= comp_init_i;
-        comp_data_o <= comp_init_i ? comp_data : 'b0;
-    end
-end
+    .dividend_i(comp_data_i[0]),
+    .divisor_i(comp_data_i[1]),
+
+    .quotient_o(comp_data_o),
+    .remainder_o()
+);
 
 endmodule

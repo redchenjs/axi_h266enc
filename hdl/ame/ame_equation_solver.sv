@@ -9,7 +9,8 @@
 
 module ame_equation_solver #(
     parameter COMP_DATA_BITS = 64,
-    parameter COMP_DATA_IDX_BITS = 3
+    parameter COMP_DATA_IDX_BITS = 3,
+    parameter COMP_DATA_FRAC_BITS = 4
 ) (
     input logic clk_i,
     input logic rst_n_i,
@@ -68,6 +69,9 @@ logic [5:0] [6:0] [COMP_DATA_BITS-1:0] comp_data_n;
 logic                                  comp_init_d;
 logic                            [5:0] comp_done_d;
 logic       [5:0] [COMP_DATA_BITS-1:0] comp_data_d;
+
+wire comp_data_zero = ~|comp_data_m;
+wire comp_data_done = &(comp_done_d & comp_data_m_mask);
 
 assign comp_data_p = comp_init ? comp_data_i : comp_data_n;
 assign comp_done_o = comp_done;
@@ -153,7 +157,8 @@ generate
             .comp_init_i(comp_init_d),
             .comp_done_o(comp_done_d[i]),
 
-            .comp_data_i({comp_data_n[i][i], comp_data_n[i][6]}),
+            .comp_data_i({comp_data_n[comp_data_m_index_mux[i]][i],
+                         {comp_data_n[comp_data_m_index_mux[i]][6][COMP_DATA_BITS-COMP_DATA_FRAC_BITS-1:0], {COMP_DATA_FRAC_BITS{1'b0}}}}),
             .comp_data_o(comp_data_d[i])
         );
 
@@ -182,11 +187,11 @@ begin
             PIVOT:
                 ctl_sta <= COMPUTE;
             COMPUTE:
-                ctl_sta <= ~|comp_data_m ? IDLE : NORMAL;
+                ctl_sta <= comp_data_zero ? IDLE : NORMAL;
             NORMAL:
                 ctl_sta <= (comp_loop == 'd5) ? DIVIDE : PIVOT;
             DIVIDE:
-                ctl_sta <= &comp_done_d ? IDLE : DIVIDE;
+                ctl_sta <= comp_data_done ? IDLE : DIVIDE;
             default:
                 ctl_sta <= IDLE;
         endcase
@@ -277,7 +282,7 @@ begin
             end
         endcase
 
-        comp_done <= ((ctl_sta == COMPUTE) & ~|comp_data_m) | ((ctl_sta == DIVIDE) & &comp_done_d);
+        comp_done <= ((ctl_sta == COMPUTE) & comp_data_zero) | ((ctl_sta == DIVIDE) & comp_data_done);
     end
 end
 

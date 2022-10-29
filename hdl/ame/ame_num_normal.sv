@@ -31,8 +31,8 @@ wire [COMP_DATA_BITS-1:0] comp_data_b = comp_data_i[COMP_DATA_BITS-1] ? -comp_da
 sra_64b #(
     .OUT_REG(1'b0)
 ) sra_64b (
-    .clk_i(),
-    .rst_n_i(),
+    .clk_i(clk_i),
+    .rst_n_i(rst_n_i),
 
     .init_i(comp_init_i),
     .done_o(),

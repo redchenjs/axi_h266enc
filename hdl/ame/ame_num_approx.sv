@@ -67,8 +67,8 @@ endgenerate
 enc_64b #(
     .OUT_REG(1'b0)
 ) enc_64b (
-    .clk_i(),
-    .rst_n_i(),
+    .clk_i(clk_i),
+    .rst_n_i(rst_n_i),
 
     .init_i(1'b1),
     .done_o(),

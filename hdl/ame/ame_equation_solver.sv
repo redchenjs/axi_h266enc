@@ -204,8 +204,8 @@ begin
                 comp_init_c <= 'b0;
                 comp_init_d <= 'b0;
 
-                comp_data_m_mask      <= comp_data_m_mask;
-                comp_data_m_index_mux <= comp_data_m_index_mux;
+                comp_data_m_mask      <= 'b0;
+                comp_data_m_index_mux <= 'b0;
             end
             PIVOT: begin
                 comp_init <= comp_init;
@@ -221,8 +221,8 @@ begin
                     end
                 end
 
-                comp_data_m_mask      <= comp_data_m_mask;
-                comp_data_m_index_mux <= comp_data_m_index_mux;
+                comp_data_m_mask      <= 'b0;
+                comp_data_m_index_mux <= 'b0;
             end
             COMPUTE: begin
                 comp_init <= 'b0;
@@ -277,8 +277,8 @@ begin
                 comp_init_c <= 'b0;
                 comp_init_d <= 'b0;
 
-                comp_data_m_mask      <= comp_data_m_mask;
-                comp_data_m_index_mux <= comp_data_m_index_mux;
+                comp_data_m_mask      <= 'b0;
+                comp_data_m_index_mux <= 'b0;
             end
         endcase
 

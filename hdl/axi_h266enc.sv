@@ -1,5 +1,5 @@
 /*
- * axi_h266enc_v1_0.sv
+ * axi_h266enc.sv
  *
  *  Created on: 2022-07-16 22:00
  *      Author: Jack Chen <redchenjs@live.com>
@@ -7,7 +7,7 @@
 
 `timescale 1 ns / 1 ps
 
-module axi_h266enc_v1_0(
+module axi_h266enc(
     input logic s_axi_aclk,
     input logic s_axi_aresetn,
 

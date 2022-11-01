@@ -131,7 +131,7 @@ begin
                 10'h000:
                     axi_awaddr_base <= s_axi_wdata[31:0];
                 10'h008:
-                    {62'b0, affine_param6_i, comp_init_i} <= s_axi_wdata;
+                    {affine_param6_i, comp_init_i} <= s_axi_wdata[1:0];
                 10'h2??:
                     if ((s_axi_awaddr[9:0]) < 42 * 8) begin
                         comp_data_i[s_axi_awaddr[9:0] / 7][s_axi_awaddr[9:0] % 7] <= s_axi_wdata;
@@ -145,6 +145,18 @@ begin
                     s_axi_rdata <= {32'b0, axi_awaddr_base};
                 10'h008:
                     s_axi_rdata <= {62'b0, affine_param6_i, comp_init_i};
+                10'h010:
+                    s_axi_rdata <= comp_data_o[0];
+                10'h018:
+                    s_axi_rdata <= comp_data_o[1];
+                10'h020:
+                    s_axi_rdata <= comp_data_o[2];
+                10'h028:
+                    s_axi_rdata <= comp_data_o[3];
+                10'h030:
+                    s_axi_rdata <= comp_data_o[4];
+                10'h038:
+                    s_axi_rdata <= comp_data_o[5];
                 10'h2??:
                     if ((s_axi_araddr[9:0]) < 42 * 8) begin
                         s_axi_rdata <= comp_data_i[s_axi_awaddr[9:0] / 7][s_axi_awaddr[9:0] % 7];

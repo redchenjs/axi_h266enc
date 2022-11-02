@@ -28,6 +28,8 @@ logic [COMP_DATA_BITS-1:0] comp_data_t;
 wire [COMP_DATA_BITS-1:0] comp_data_a = comp_data_i[COMP_DATA_BITS-1] ? -comp_data_i : comp_data_i;
 wire [COMP_DATA_BITS-1:0] comp_data_b = comp_data_i[COMP_DATA_BITS-1] ? -comp_data_t : comp_data_t;
 
+assign comp_data_o = comp_init_i ? comp_data_b : comp_data_i;
+
 sra_64b #(
     .OUT_REG(1'b0)
 ) sra_64b (
@@ -43,16 +45,5 @@ sra_64b #(
     .data_i(comp_data_a),
     .data_o(comp_data_t)
 );
-
-always_ff @(posedge clk_i or negedge rst_n_i)
-begin
-    if (!rst_n_i) begin
-        comp_done_o <= 'b0;
-        comp_data_o <= 'b0;
-    end else begin
-        comp_done_o <= comp_init_i;
-        comp_data_o <= comp_init_i ? comp_data_b : comp_data_i;
-    end
-end
 
 endmodule

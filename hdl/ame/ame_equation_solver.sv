@@ -40,10 +40,11 @@ module ame_equation_solver #(
 
 typedef enum logic [2:0] {
     IDLE    = 'd0,
-    PIVOT   = 'd1,
-    COMPUTE = 'd2,
-    NORMAL  = 'd3,
-    DIVIDE  = 'd4
+    INIT    = 'd1,
+    PIVOT   = 'd2,
+    COMPUTE = 'd3,
+    NORMAL  = 'd4,
+    DIVIDE  = 'd5
 } state_t;
 
 state_t ctl_sta;
@@ -52,6 +53,8 @@ logic       comp_done;
 logic [2:0] comp_loop;
 
 logic                   [COMP_DATA_BITS-1:0] comp_data_m;
+logic             [5:0] [COMP_DATA_BITS-1:0] comp_data_e_shift;
+logic     [5:0] [$clog2(COMP_DATA_BITS)-1:0] comp_data_t_shift;
 logic           [$clog2(COMP_DATA_BITS)-1:0] comp_data_m_shift;
 
 logic                                  [5:0] comp_data_m_mask;
@@ -59,6 +62,8 @@ logic               [COMP_DATA_IDX_BITS-1:0] comp_data_m_index;
 logic         [5:0] [COMP_DATA_IDX_BITS-1:0] comp_data_m_index_mux;
 
 logic       [5:0] [6:0] [COMP_DATA_BITS-1:0] comp_data_t;
+
+logic                                        comp_init_p;
 logic [5:0] [6:0] [3:0] [COMP_DATA_BITS-1:0] comp_data_p;
 
 logic                            [5:0] [6:0] comp_init_c;
@@ -97,21 +102,34 @@ ame_num_compare #(
     .comp_data_index_o(comp_data_m_index)
 );
 
-ame_num_approx #(
-    .COMP_DATA_BITS(64)
-) ame_num_approx (
-    .clk_i(clk_i),
-    .rst_n_i(rst_n_i),
-
-    .comp_init_i('b1),
-    .comp_done_o(),
-
-    .comp_data_i(comp_data_m),
-    .comp_data_o(comp_data_m_shift)
-);
-
 generate
     for (genvar i = 0; i < 6; i++) begin
+        ame_num_approx #(
+            .COMP_DATA_BITS(64)
+        ) ame_num_approx (
+            .clk_i(clk_i),
+            .rst_n_i(rst_n_i),
+
+            .comp_init_i(1'b1),
+            .comp_done_o(),
+
+            .comp_data_i(comp_data_t[i][comp_loop]),
+            .comp_data_o(comp_data_e_shift[i])
+        );
+
+        enc_64b #(
+            .OUT_REG(1'b0)
+        ) enc_64b (
+            .clk_i(clk_i),
+            .rst_n_i(rst_n_i),
+
+            .init_i(1'b1),
+            .done_o(),
+
+            .data_i(comp_data_e_shift[i]),
+            .data_o(comp_data_t_shift[i])
+        );
+
         for (genvar j = 0; j < 7; j++) begin
             wire [COMP_DATA_BITS-1:0] M = comp_data_m;
             wire [COMP_DATA_BITS-1:0] D = comp_data_t[i][j];
@@ -177,6 +195,15 @@ endgenerate
 always_ff @(posedge clk_i or negedge rst_n_i)
 begin
     if (!rst_n_i) begin
+        comp_data_m_shift <= 'd0;
+    end else begin
+        comp_data_m_shift <= comp_data_t_shift[comp_data_m_index];
+    end
+end
+
+always_ff @(posedge clk_i or negedge rst_n_i)
+begin
+    if (!rst_n_i) begin
         ctl_sta <= IDLE;
 
         comp_done <= 'b0;
@@ -192,7 +219,9 @@ begin
     end else begin
         case (ctl_sta)
             IDLE:
-                ctl_sta <= comp_init_i ? PIVOT : IDLE;
+                ctl_sta <= comp_init_i ? INIT : IDLE;
+            INIT:
+                ctl_sta <= PIVOT;
             PIVOT:
                 ctl_sta <= comp_data_zero ? IDLE : COMPUTE;
             COMPUTE:
@@ -209,6 +238,17 @@ begin
             IDLE: begin
                 comp_loop <= affine_param6_i ? 'd0 : 'd2;
 
+                comp_init_c <= 'b0;
+                comp_init_d <= 'b0;
+
+                comp_data_t <= comp_init_i ? comp_data_i : comp_data_t;
+
+                comp_data_m_mask      <= 'b0;
+                comp_data_m_index_mux <= 'b0;
+            end
+            INIT: begin
+                comp_loop <= comp_loop;
+
                 for (int i = 0; i < 6; i++) begin
                     for (int j = 0; j < 7; j++) begin
                         if (i[COMP_DATA_IDX_BITS-1:0] == comp_data_m_index) begin
@@ -220,7 +260,7 @@ begin
                 end
                 comp_init_d <= 'b0;
 
-                comp_data_t <= comp_init_i ? comp_data_i : comp_data_t;
+                comp_data_t <= comp_data_t;
 
                 comp_data_m_mask      <= 'b0;
                 comp_data_m_index_mux <= 'b0;

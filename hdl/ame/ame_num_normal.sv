@@ -37,7 +37,7 @@ sra_64b #(
     .rst_n_i(rst_n_i),
 
     .init_i(comp_init_i),
-    .done_o(),
+    .done_o(comp_done_o),
 
     .arith_i(1'b1),
     .shift_i(comp_shift_i),

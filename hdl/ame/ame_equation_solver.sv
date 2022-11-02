@@ -53,8 +53,8 @@ logic       comp_done;
 logic [2:0] comp_loop;
 
 logic                   [COMP_DATA_BITS-1:0] comp_data_m;
-logic             [5:0] [COMP_DATA_BITS-1:0] comp_data_e_shift;
-logic     [5:0] [$clog2(COMP_DATA_BITS)-1:0] comp_data_t_shift;
+logic             [5:0] [COMP_DATA_BITS-1:0] comp_data_m_enc;
+logic     [5:0] [$clog2(COMP_DATA_BITS)-1:0] comp_data_m_mux;
 logic           [$clog2(COMP_DATA_BITS)-1:0] comp_data_m_shift;
 
 logic                                  [5:0] comp_data_m_mask;
@@ -62,8 +62,6 @@ logic               [COMP_DATA_IDX_BITS-1:0] comp_data_m_index;
 logic         [5:0] [COMP_DATA_IDX_BITS-1:0] comp_data_m_index_mux;
 
 logic       [5:0] [6:0] [COMP_DATA_BITS-1:0] comp_data_t;
-
-logic                                        comp_init_p;
 logic [5:0] [6:0] [3:0] [COMP_DATA_BITS-1:0] comp_data_p;
 
 logic                            [5:0] [6:0] comp_init_c;
@@ -114,7 +112,7 @@ generate
             .comp_done_o(),
 
             .comp_data_i(comp_data_t[i][comp_loop]),
-            .comp_data_o(comp_data_e_shift[i])
+            .comp_data_o(comp_data_m_enc[i])
         );
 
         enc_64b #(
@@ -126,20 +124,20 @@ generate
             .init_i(1'b1),
             .done_o(),
 
-            .data_i(comp_data_e_shift[i]),
-            .data_o(comp_data_t_shift[i])
+            .data_i(comp_data_m_enc[i]),
+            .data_o(comp_data_m_mux[i])
         );
 
         for (genvar j = 0; j < 7; j++) begin
-            wire [COMP_DATA_BITS-1:0] M = comp_data_m;
+            wire [COMP_DATA_BITS-1:0] M = comp_init_c[i][j] ? comp_data_m : 'b1;
             wire [COMP_DATA_BITS-1:0] D = comp_data_t[i][j];
-            wire [COMP_DATA_BITS-1:0] L = comp_data_t[i][comp_loop];
+            wire [COMP_DATA_BITS-1:0] L = comp_init_c[i][j] ? comp_data_t[i][comp_loop] : 'b0;
             wire [COMP_DATA_BITS-1:0] C = comp_data_t[comp_data_m_index][j];
 
-            always_ff @(posedge clk_i or negedge rst_n_i)
+            always_ff @(posedge clk_i)
             begin
                 if (!rst_n_i) begin
-                    comp_data_p[i][j] <= 'd0;
+                    comp_data_p[i][j] <= 'b0;
                 end else begin
                     comp_data_p[i][j] <= {M, D, L, C};
                 end
@@ -197,7 +195,7 @@ begin
     if (!rst_n_i) begin
         comp_data_m_shift <= 'd0;
     end else begin
-        comp_data_m_shift <= comp_data_t_shift[comp_data_m_index];
+        comp_data_m_shift <= comp_data_m_mux[comp_data_m_index];
     end
 end
 

@@ -26,14 +26,20 @@ wire [COMP_DATA_BITS-1:0] D = comp_data_i[2];
 wire [COMP_DATA_BITS-1:0] L = comp_data_i[1];
 wire [COMP_DATA_BITS-1:0] C = comp_data_i[0];
 
+always_ff @(posedge clk_i) begin
+    if (!rst_n_i) begin
+        comp_data_o <= 'b0;
+    end else begin
+        comp_data_o <= M * D - L * C;
+    end
+end
+
 always_ff @(posedge clk_i or negedge rst_n_i)
 begin
     if (!rst_n_i) begin
         comp_done_o <= 'b0;
-        comp_data_o <= 'b0;
     end else begin
         comp_done_o <= comp_init_i;
-        comp_data_o <= comp_init_i ? (M * D - L * C) : comp_data_i[2];
     end
 end
 

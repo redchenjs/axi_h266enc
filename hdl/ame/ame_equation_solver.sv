@@ -134,13 +134,8 @@ generate
             wire [COMP_DATA_BITS-1:0] L = comp_init_c[i][j] ? comp_data_t[i][comp_loop] : 'b0;
             wire [COMP_DATA_BITS-1:0] C = comp_data_t[comp_data_m_index][j];
 
-            always_ff @(posedge clk_i)
-            begin
-                if (!rst_n_i) begin
-                    comp_data_p[i][j] <= 'b0;
-                end else begin
-                    comp_data_p[i][j] <= {M, D, L, C};
-                end
+            always_ff @(posedge clk_i) begin
+                comp_data_p[i][j] <= {M, D, L, C};
             end
 
             ame_num_compute #(

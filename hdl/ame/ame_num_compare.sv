@@ -58,7 +58,7 @@ wire [COMP_DATA_IDX_BITS-1:0] I_MAX_A = MAX_A ? I_MAX_0_1 : I_MAX_2_3;
 wire [COMP_DATA_IDX_BITS-1:0] I_MAX_B = MAX_B ? I_MAX_A   : I_MAX_4_5;
 
 assign comp_done_o       = comp_init_i;
-assign comp_data_o       = D_MAX_B;
+assign comp_data_o       = comp_data_i[I_MAX_B];
 assign comp_data_index_o = I_MAX_B;
 
 endmodule

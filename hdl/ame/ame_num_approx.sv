@@ -17,18 +17,13 @@ module ame_num_approx #(
     output logic comp_done_o,
 
     // 64-bit Integer Input & 6-bit Integer Output
-    input  logic [COMP_DATA_BITS-1:0] comp_data_i,
-    output logic [COMP_DATA_BITS-1:0] comp_data_o
+    input  logic         [COMP_DATA_BITS-1:0] comp_data_i,
+    output logic [$clog2(COMP_DATA_BITS)-1:0] comp_data_o
 );
-
-logic comp_init;
 
 logic [7:0] pri_8b_or;
 logic [7:0] pri_8b_ci;
 logic [7:0] pri_8b_ep;
-
-logic [7:0] pri_8b_ci_r;
-logic [7:0] pri_8b_ep_r;
 
 logic [COMP_DATA_BITS-1:0] comp_data_u;
 logic [COMP_DATA_BITS-1:0] comp_data_d;
@@ -43,12 +38,12 @@ generate
     assign pri_8b_ci[0] = 1'b0;
 
     for (genvar i = 0; i < COMP_DATA_BITS / 8 - 1; i++) begin: pri_8b_ci_block
-        assign pri_8b_ci[i + 1] = &comp_data_u[i * 8 + 7 : i * 8 + 6];
+        assign pri_8b_ci[i + 1] = &comp_data_u[i * 8 + 7 : 0];
     end
 endgenerate
 
 pri_8b pri_8b_la(
-    .rst_n_i(comp_init_i),
+    .rst_n_i(1'b1),
 
     .data_i(pri_8b_or),
     .data_o(pri_8b_ep)
@@ -57,9 +52,9 @@ pri_8b pri_8b_la(
 generate
     for (genvar i = 0; i < COMP_DATA_BITS / 8; i++) begin: pri_8b_ep_block
         ame_pri_8b ame_pri_8b_ep_i(
-            .rst_n_i(pri_8b_ep_r[i]),
+            .rst_n_i(pri_8b_ep[i]),
 
-            .carry_i(pri_8b_ci_r[i]),
+            .carry_i(pri_8b_ci[i]),
             .carry_o(),
 
             .data_i(comp_data_u[i * 8 + 7 : i * 8]),
@@ -68,25 +63,17 @@ generate
     end
 endgenerate
 
-always_ff @(posedge clk_i or negedge rst_n_i)
-begin
-    if (!rst_n_i) begin
-        comp_init <= 'b0;
+enc_64b #(
+    .OUT_REG(1'b1)
+) enc_64b (
+    .clk_i(clk_i),
+    .rst_n_i(rst_n_i),
 
-        pri_8b_ci_r <= 'b0;
-        pri_8b_ep_r <= 'b0;
+    .init_i(comp_init_i),
+    .done_o(comp_done_o),
 
-        comp_done_o <= 'b0;
-        comp_data_o <= 'b0;
-    end else begin
-        comp_init <= comp_init_i;
-
-        pri_8b_ci_r <= comp_init_i ? pri_8b_ci : pri_8b_ci_r;
-        pri_8b_ep_r <= comp_init_i ? pri_8b_ep : pri_8b_ep_r;
-
-        comp_done_o <= comp_init;
-        comp_data_o <= comp_init ? comp_data_d : comp_data_o;
-    end
-end
+    .data_i(comp_data_d),
+    .data_o(comp_data_o)
+);
 
 endmodule

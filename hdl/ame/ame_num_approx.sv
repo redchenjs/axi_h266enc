@@ -21,9 +21,9 @@ module ame_num_approx #(
     output logic [$clog2(COMP_DATA_BITS)-1:0] comp_data_o
 );
 
-logic [7:0] pri_8b_or;
-logic [7:0] pri_8b_ci;
-logic [7:0] pri_8b_ep;
+logic       [7:0] pri_8b_or;
+logic [7:0] [1:0] pri_8b_ci;
+logic       [7:0] pri_8b_ep;
 
 logic [COMP_DATA_BITS-1:0] comp_data_u;
 logic [COMP_DATA_BITS-1:0] comp_data_d;
@@ -31,18 +31,18 @@ logic [COMP_DATA_BITS-1:0] comp_data_d;
 assign comp_data_u = comp_data_i[COMP_DATA_BITS-1] ? -comp_data_i : comp_data_i;
 
 generate
-    for (genvar i = 0; i < COMP_DATA_BITS / 8; i++) begin: pri_8b_or_block
+    for (genvar i = 0; i < COMP_DATA_BITS / 8; i++) begin
         assign pri_8b_or[i] = |comp_data_u[i * 8 + 7 : i * 8];
     end
 
-    assign pri_8b_ci[0] = 1'b0;
+    assign pri_8b_ci[0] = 'b0;
 
-    for (genvar i = 0; i < COMP_DATA_BITS / 8 - 1; i++) begin: pri_8b_ci_block
-        assign pri_8b_ci[i + 1] = &comp_data_u[i * 8 + 7 : 0];
+    for (genvar i = 0; i < COMP_DATA_BITS / 8 - 1; i++) begin
+        assign pri_8b_ci[i + 1] = comp_data_u[i * 8 + 7 : i * 8 + 6];
     end
 endgenerate
 
-pri_8b pri_8b_la(
+ame_pri_la ame_pri_8b_la(
     .rst_n_i(1'b1),
 
     .data_i(pri_8b_or),
@@ -50,12 +50,11 @@ pri_8b pri_8b_la(
 );
 
 generate
-    for (genvar i = 0; i < COMP_DATA_BITS / 8; i++) begin: pri_8b_ep_block
-        ame_pri_8b ame_pri_8b_ep_i(
+    for (genvar i = 0; i < COMP_DATA_BITS / 8; i++) begin
+        ame_pri_ep ame_pri_8b_ep(
             .rst_n_i(pri_8b_ep[i]),
 
             .carry_i(pri_8b_ci[i]),
-            .carry_o(),
 
             .data_i(comp_data_u[i * 8 + 7 : i * 8]),
             .data_o(comp_data_d[i * 8 + 7 : i * 8])

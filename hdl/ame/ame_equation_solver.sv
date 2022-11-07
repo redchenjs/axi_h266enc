@@ -86,7 +86,7 @@ assign comp_done_o = comp_done;
 enc_8b comp_loop_enc(
     .rst_n_i(1'b1),
 
-    .data_i({'b0, comp_loop}),
+    .data_i({2'b0, comp_loop}),
     .data_o(comp_data_t_sel)
 );
 

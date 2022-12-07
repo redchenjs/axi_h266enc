@@ -10,7 +10,7 @@
 module ame_equation_solver #(
     parameter COMP_DATA_BITS = 64,
     parameter COMP_DATA_IDX_BITS = 3,
-    parameter COMP_DATA_FRAC_BITS = 4
+    parameter COMP_DATA_FRAC_BITS = 8
 ) (
     input logic clk_i,
     input logic rst_n_i,
@@ -41,9 +41,10 @@ module ame_equation_solver #(
 typedef enum logic [2:0] {
     IDLE    = 'd0,
     PIVOT   = 'd1,
-    COMPUTE = 'd2,
-    NORMAL  = 'd3,
-    DIVIDE  = 'd4
+    SCALE   = 'd2,
+    COMPUTE = 'd3,
+    NORMAL  = 'd4,
+    DIVIDE  = 'd5
 } state_t;
 
 state_t ctl_sta;
@@ -51,32 +52,37 @@ state_t ctl_sta;
 logic       comp_done;
 logic [5:0] comp_loop;
 
-logic                   [COMP_DATA_BITS-1:0] comp_data_a;
-logic               [COMP_DATA_IDX_BITS-1:0] comp_data_a_index;
+logic                     [COMP_DATA_BITS-1:0] comp_data_a;
+logic                 [COMP_DATA_IDX_BITS-1:0] comp_data_a_index;
 
-logic                   [COMP_DATA_BITS-1:0] comp_data_m;
-logic           [$clog2(COMP_DATA_BITS)-1:0] comp_data_m_shift;
+logic                     [COMP_DATA_BITS-1:0] comp_data_m;
+logic             [$clog2(COMP_DATA_BITS)-1:0] comp_data_m_shift;
 
-logic                                  [5:0] comp_data_m_mask;
-logic               [COMP_DATA_IDX_BITS-1:0] comp_data_m_index;
-logic         [5:0] [COMP_DATA_IDX_BITS-1:0] comp_data_m_index_mux;
+logic [5:0]                                    comp_data_m_mask;
+logic                 [COMP_DATA_IDX_BITS-1:0] comp_data_m_index;
+logic [5:0]           [COMP_DATA_IDX_BITS-1:0] comp_data_m_index_mux;
 
-logic       [5:0] [6:0] [COMP_DATA_BITS-1:0] comp_data_t;
-logic                                  [2:0] comp_data_t_sel;
+logic [5:0] [6:0] [$clog2(COMP_DATA_BITS)-1:0] comp_data_s_shift;
 
-logic                                        comp_init_p;
-logic                                        comp_done_p;
-logic [5:0] [6:0] [3:0] [COMP_DATA_BITS-1:0] comp_data_p;
+logic [5:0] [6:0]         [COMP_DATA_BITS-1:0] comp_data_t;
+logic                                    [2:0] comp_data_t_sel;
 
-logic                            [5:0] [6:0] comp_init_c;
-logic                            [5:0] [6:0] comp_done_c;
-logic       [5:0] [6:0] [COMP_DATA_BITS-1:0] comp_data_c;
+logic                                          comp_init_p;
+logic                                          comp_done_p;
+logic [5:0] [6:0] [3:0]   [COMP_DATA_BITS-1:0] comp_data_p;
 
-logic       [5:0] [6:0] [COMP_DATA_BITS-1:0] comp_data_n;
+logic [5:0] [6:0]                              comp_init_s;
+logic [5:0] [6:0] [3:0]   [COMP_DATA_BITS-1:0] comp_data_s;
 
-logic                                        comp_init_d;
-logic                                  [5:0] comp_done_d;
-logic             [5:0] [COMP_DATA_BITS-1:0] comp_data_d;
+logic [5:0] [6:0]                              comp_init_c;
+logic [5:0] [6:0]                              comp_done_c;
+logic [5:0] [6:0]         [COMP_DATA_BITS-1:0] comp_data_c;
+
+logic [5:0] [6:0]         [COMP_DATA_BITS-1:0] comp_data_n;
+
+logic                                          comp_init_d;
+logic [5:0]                                    comp_done_d;
+logic [5:0]               [COMP_DATA_BITS-1:0] comp_data_d;
 
 wire comp_data_zero = ~|comp_data_a;
 wire comp_data_done =  &comp_done_d & ~comp_init_d;
@@ -154,6 +160,21 @@ generate
                 comp_data_p[i][j][0] <= comp_data_t[comp_data_a_index][j];
             end
 
+            ame_num_scale #(
+                .COMP_DATA_BITS(64)
+            ) ame_num_scale (
+                .clk_i(clk_i),
+                .rst_n_i(rst_n_i),
+
+                .comp_init_i(comp_init_s[i][j]),
+                .comp_done_o(),
+
+                .comp_shift_o(comp_data_s_shift[i][j]),
+
+                .comp_data_i(comp_data_p[i][j]),
+                .comp_data_o(comp_data_s[i][j])
+            );
+
             ame_num_compute #(
                 .COMP_DATA_BITS(64)
             ) ame_num_compute (
@@ -163,7 +184,7 @@ generate
                 .comp_init_i(comp_init_c[i][j]),
                 .comp_done_o(comp_done_c[i][j]),
 
-                .comp_data_i(comp_data_p[i][j]),
+                .comp_data_i(comp_data_s[i][j]),
                 .comp_data_o(comp_data_c[i][j])
             );
 
@@ -176,7 +197,7 @@ generate
                 .comp_init_i(comp_done_c[i][j]),
                 .comp_done_o(),
 
-                .comp_shift_i(comp_data_m_shift),
+                .comp_shift_i(comp_data_m_shift - comp_data_s_shift[i][j]),
 
                 .comp_data_i(comp_data_c[i][j]),
                 .comp_data_o(comp_data_n[i][j])
@@ -210,6 +231,7 @@ begin
         comp_loop <= 'b0;
 
         comp_init_p <= 'b0;
+        comp_init_s <= 'b0;
         comp_init_c <= 'b0;
         comp_init_d <= 'b0;
 
@@ -222,7 +244,9 @@ begin
             IDLE:
                 ctl_sta <= comp_init_i ? PIVOT : IDLE;
             PIVOT:
-                ctl_sta <= comp_data_zero ? IDLE : COMPUTE;
+                ctl_sta <= comp_data_zero ? IDLE : SCALE;
+            SCALE:
+                ctl_sta <= COMPUTE;
             COMPUTE:
                 ctl_sta <= NORMAL;
             NORMAL:
@@ -253,6 +277,28 @@ begin
                 for (int i = 0; i < 6; i++) begin
                     for (int j = 0; j < 7; j++) begin
                         if (i[COMP_DATA_IDX_BITS-1:0] == comp_data_a_index) begin
+                            comp_init_s[i][j] <= 'b0;
+                        end else begin
+                            comp_init_s[i][j] <= 'b1;
+                        end
+                    end
+                end
+                comp_init_c <= 'b0;
+                comp_init_d <= 'b0;
+
+                comp_data_t <= comp_data_t;
+
+                comp_data_m_mask      <= comp_data_m_mask;
+                comp_data_m_index_mux <= comp_data_m_index_mux;
+            end
+            SCALE: begin
+                comp_loop <= comp_loop;
+
+                comp_init_p <= 'b0;
+                comp_init_s <= 'b0;
+                for (int i = 0; i < 6; i++) begin
+                    for (int j = 0; j < 7; j++) begin
+                        if (i[COMP_DATA_IDX_BITS-1:0] == comp_data_m_index) begin
                             comp_init_c[i][j] <= 'b0;
                         end else begin
                             comp_init_c[i][j] <= 'b1;
@@ -270,6 +316,7 @@ begin
                 comp_loop <= comp_loop;
 
                 comp_init_p <= 'b0;
+                comp_init_s <= 'b0;
                 comp_init_c <= 'b0;
                 comp_init_d <= 'b0;
 
@@ -304,6 +351,7 @@ begin
                 comp_loop <= comp_loop[5] ? 'b0 : {comp_loop[4:0], 1'b0};
 
                 comp_init_p <= 'b1;
+                comp_init_s <= 'b0;
                 comp_init_c <= 'b0;
                 comp_init_d <= comp_loop[5] ? 'b1 : 'b0;
 
@@ -316,6 +364,7 @@ begin
                 comp_loop <= 'b0;
 
                 comp_init_p <= 'b0;
+                comp_init_s <= 'b0;
                 comp_init_c <= 'b0;
                 comp_init_d <= 'b0;
 
@@ -328,6 +377,7 @@ begin
                 comp_loop <= 'b0;
 
                 comp_init_p <= 'b0;
+                comp_init_s <= 'b0;
                 comp_init_c <= 'b0;
                 comp_init_d <= 'b0;
 

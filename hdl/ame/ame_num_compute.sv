@@ -21,13 +21,14 @@ module ame_num_compute #(
     output logic       [COMP_DATA_BITS-1:0] comp_data_o
 );
 
-wire [COMP_DATA_BITS-1:0] M = comp_data_i[3];
-wire [COMP_DATA_BITS-1:0] D = comp_data_i[2];
-wire [COMP_DATA_BITS-1:0] L = comp_data_i[1];
-wire [COMP_DATA_BITS-1:0] C = comp_data_i[0];
+wire [47:0] M = {comp_data_i[3][COMP_DATA_BITS-1], comp_data_i[3][46:0]};
+wire [47:0] D = {comp_data_i[2][COMP_DATA_BITS-1], comp_data_i[2][46:0]};
+wire [47:0] L = {comp_data_i[1][COMP_DATA_BITS-1], comp_data_i[1][46:0]};
+wire [47:0] C = {comp_data_i[0][COMP_DATA_BITS-1], comp_data_i[0][46:0]};
+wire [47:0] S = M * D - L * C;
 
 always_ff @(posedge clk_i) begin
-    comp_data_o <= M * D - L * C;
+    comp_data_o <= {{17{S[47]}}, S[46:0]};
 end
 
 always_ff @(posedge clk_i or negedge rst_n_i)

@@ -88,7 +88,7 @@ sra_64b #(
     .init_i(1'b1),
     .done_o(),
 
-    .arith_i(1'b1),
+    .arith_i(1'b0),
     .shift_i(comp_shift),
 
     .data_i(comp_data_u[3]),
@@ -104,7 +104,7 @@ sra_64b #(
     .init_i(1'b1),
     .done_o(),
 
-    .arith_i(1'b1),
+    .arith_i(1'b0),
     .shift_i(comp_shift),
 
     .data_i(comp_data_u[1]),

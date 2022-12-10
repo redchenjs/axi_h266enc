@@ -29,7 +29,6 @@ logic       [$clog2(COMP_DATA_BITS)-1:0] comp_shift;
 logic [3:0]         [COMP_DATA_BITS-1:0] comp_data_u;
 logic [3:0]         [COMP_DATA_BITS-1:0] comp_data_p;
 logic [3:0] [$clog2(COMP_DATA_BITS)-1:0] comp_data_e;
-logic [1:0]         [COMP_DATA_BITS-1:0] comp_data_s;
 logic [3:0]         [COMP_DATA_BITS-1:0] comp_data_r;
 
 wire [$clog2(COMP_DATA_BITS):0] MD_BITS = comp_data_e[3] + comp_data_e[2];
@@ -42,9 +41,7 @@ wire LC_BITS_OVF = (LC_BITS > COMP_SCALE_BITS);
 wire [$clog2(COMP_DATA_BITS):0] MD_BITS_DIFF = (MD_BITS - COMP_SCALE_BITS);
 wire [$clog2(COMP_DATA_BITS):0] LC_BITS_DIFF = (LC_BITS - COMP_SCALE_BITS);
 
-assign comp_data_r[3] = comp_data_i[3][COMP_DATA_BITS-1] ? -comp_data_s[1] : comp_data_s[1];
 assign comp_data_r[2] = comp_data_i[2];
-assign comp_data_r[1] = comp_data_i[1][COMP_DATA_BITS-1] ? -comp_data_s[0] : comp_data_s[0];
 assign comp_data_r[0] = comp_data_i[0];
 
 generate
@@ -88,11 +85,11 @@ sra_64b #(
     .init_i(1'b1),
     .done_o(),
 
-    .arith_i(1'b0),
+    .arith_i(1'b1),
     .shift_i(comp_shift),
 
-    .data_i(comp_data_u[3]),
-    .data_o(comp_data_s[1])
+    .data_i(comp_data_i[3]),
+    .data_o(comp_data_r[3])
 );
 
 sra_64b #(
@@ -104,11 +101,11 @@ sra_64b #(
     .init_i(1'b1),
     .done_o(),
 
-    .arith_i(1'b0),
+    .arith_i(1'b1),
     .shift_i(comp_shift),
 
-    .data_i(comp_data_u[1]),
-    .data_o(comp_data_s[0])
+    .data_i(comp_data_i[1]),
+    .data_o(comp_data_r[1])
 );
 
 always_comb begin

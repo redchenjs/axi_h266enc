@@ -23,13 +23,6 @@ module ame_num_normal #(
     output logic [COMP_DATA_BITS-1:0] comp_data_o
 );
 
-logic [COMP_DATA_BITS-1:0] comp_data_t;
-
-wire [COMP_DATA_BITS-1:0] comp_data_a = comp_data_i[COMP_DATA_BITS-1] ? -comp_data_i : comp_data_i;
-wire [COMP_DATA_BITS-1:0] comp_data_b = comp_data_i[COMP_DATA_BITS-1] ? -comp_data_t : comp_data_t;
-
-assign comp_data_o = comp_init_i ? comp_data_b : comp_data_i;
-
 sra_64b #(
     .OUT_REG(1'b0)
 ) sra_64b (
@@ -39,11 +32,11 @@ sra_64b #(
     .init_i(comp_init_i),
     .done_o(comp_done_o),
 
-    .arith_i(1'b0),
+    .arith_i(1'b1),
     .shift_i(comp_shift_i),
 
-    .data_i(comp_data_a),
-    .data_o(comp_data_t)
+    .data_i(comp_data_i),
+    .data_o(comp_data_o)
 );
 
 endmodule

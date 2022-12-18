@@ -114,6 +114,8 @@ logic [5:0] [COMP_DATA_BITS-1:0] comp_data_o;
 always_ff @(posedge s_axi_aclk or negedge s_axi_aresetn)
 begin
     if (!s_axi_aresetn) begin
+        axi_awaddr_base <= 'b0;
+
         comp_init_i <= 'b0;
         comp_data_i <= 'b0;
 

@@ -63,6 +63,7 @@ logic                 [COMP_DATA_IDX_BITS-1:0] comp_data_m_index;
 logic [5:0]           [COMP_DATA_IDX_BITS-1:0] comp_data_m_index_mux;
 
 logic [5:0] [6:0] [$clog2(COMP_DATA_BITS)-1:0] comp_data_s_shift;
+logic [5:0] [6:0] [$clog2(COMP_DATA_BITS)-1:0] comp_data_n_shift;
 
 logic [5:0] [6:0]         [COMP_DATA_BITS-1:0] comp_data_t;
 logic                                    [2:0] comp_data_t_sel;
@@ -158,6 +159,8 @@ generate
 
                 comp_data_p[i][j][2] <= comp_data_t[i][j];
                 comp_data_p[i][j][0] <= comp_data_t[comp_data_a_index][j];
+
+                comp_data_n_shift[i][j] <= comp_data_m_shift - comp_data_s_shift[i][j];
             end
 
             ame_num_scale #(
@@ -197,7 +200,7 @@ generate
                 .comp_init_i(comp_done_c[i][j]),
                 .comp_done_o(),
 
-                .comp_shift_i(comp_data_m_shift - comp_data_s_shift[i][j]),
+                .comp_shift_i(comp_data_n_shift[i][j]),
 
                 .comp_data_i(comp_data_c[i][j]),
                 .comp_data_o(comp_data_n[i][j])

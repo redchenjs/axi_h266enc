@@ -26,8 +26,8 @@ module ame_num_scale #(
 
 logic       [$clog2(COMP_DATA_BITS)-1:0] comp_shift;
 
-logic [3:0]         [COMP_DATA_BITS-1:0] comp_data_u;
-logic [3:0]         [COMP_DATA_BITS-1:0] comp_data_p;
+logic [3:0]                       [47:0] comp_data_u;
+logic [3:0]                       [47:0] comp_data_p;
 logic [3:0] [$clog2(COMP_DATA_BITS)-1:0] comp_data_e;
 logic [3:0]         [COMP_DATA_BITS-1:0] comp_data_r;
 
@@ -46,7 +46,7 @@ assign comp_data_r[0] = comp_data_i[0];
 
 generate
     for (genvar i = 0; i < 4; i++) begin
-        assign comp_data_u[i] = comp_data_i[i][COMP_DATA_BITS-1] ? -comp_data_i[i] : comp_data_i[i];
+        assign comp_data_u[i] = comp_data_i[i][47] ? -comp_data_i[i][47:0] : comp_data_i[i][47:0];
 
         pri_64b #(
             .OUT_REG(1'b0)
@@ -57,7 +57,7 @@ generate
             .init_i(1'b1),
             .done_o(),
 
-            .data_i(comp_data_u[i]),
+            .data_i({16'b0, comp_data_u[i]}),
             .data_o(comp_data_p[i])
         );
 
@@ -70,7 +70,7 @@ generate
             .init_i(1'b1),
             .done_o(),
 
-            .data_i(comp_data_p[i]),
+            .data_i({16'b0, comp_data_p[i]}),
             .data_o(comp_data_e[i])
         );
     end
@@ -88,7 +88,7 @@ sra_64b #(
     .arith_i(1'b1),
     .shift_i(comp_shift),
 
-    .data_i(comp_data_i[3]),
+    .data_i({{16{comp_data_i[3][47:0]}}, comp_data_i[3]}),
     .data_o(comp_data_r[3])
 );
 
@@ -104,7 +104,7 @@ sra_64b #(
     .arith_i(1'b1),
     .shift_i(comp_shift),
 
-    .data_i(comp_data_i[1]),
+    .data_i({{16{comp_data_i[1][47:0]}}, comp_data_i[1]}),
     .data_o(comp_data_r[1])
 );
 

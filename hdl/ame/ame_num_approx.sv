@@ -21,10 +21,10 @@ module ame_num_approx #(
     output logic [$clog2(COMP_DATA_BITS)-1:0] comp_data_o
 );
 
-logic [COMP_DATA_BITS-1:0] comp_data_u;
-logic [COMP_DATA_BITS-1:0] comp_data_p;
+logic [47:0] comp_data_u;
+logic [47:0] comp_data_p;
 
-assign comp_data_u = comp_data_i[COMP_DATA_BITS-1] ? -comp_data_i : comp_data_i;
+assign comp_data_u = comp_data_i[47] ? -comp_data_i[47:0] : comp_data_i[47:0];
 
 pri_64b #(
     .OUT_REG(1'b0)
@@ -35,7 +35,7 @@ pri_64b #(
     .init_i(comp_init_i),
     .done_o(),
 
-    .data_i(comp_data_u),
+    .data_i({16'b0, comp_data_u}),
     .data_o(comp_data_p)
 );
 
@@ -48,7 +48,7 @@ enc_64b #(
     .init_i(comp_init_i),
     .done_o(),
 
-    .data_i(comp_data_p),
+    .data_i({16'b0, comp_data_p}),
     .data_o(comp_data_o)
 );
 

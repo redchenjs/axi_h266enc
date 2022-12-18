@@ -35,7 +35,7 @@ sra_64b #(
     .arith_i(1'b1),
     .shift_i(comp_shift_i),
 
-    .data_i(comp_data_i),
+    .data_i({{16{comp_data_i[47]}}, comp_data_i[47:0]}),
     .data_o(comp_data_o)
 );
 

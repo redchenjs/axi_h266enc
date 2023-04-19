@@ -59,17 +59,18 @@ logic [2:0] comp_loop_3_4;
 logic                     [COMP_DATA_BITS-1:0] comp_data_a;
 logic                 [COMP_DATA_IDX_BITS-1:0] comp_data_a_index;
 
-logic                     [COMP_DATA_BITS-1:0] comp_data_m;
-logic             [$clog2(COMP_DATA_BITS)-1:0] comp_data_m_shift;
+logic                     [COMP_DATA_BITS-1:0] comp_data_m_1_2;
+logic             [$clog2(COMP_DATA_BITS)-1:0] comp_data_m_shift_2_3;
 
-logic [5:0]                                    comp_data_m_mask;
+logic [5:0]                                    comp_data_m_mask_0_1;
+logic [5:0]                                    comp_data_m_mask_1_2;
+logic [5:0]                                    comp_data_m_mask_2_3;
+logic [5:0]                                    comp_data_m_mask_3_4;
 
-logic                 [COMP_DATA_IDX_BITS-1:0] comp_data_m_index;
 logic                 [COMP_DATA_IDX_BITS-1:0] comp_data_m_index_1_2;
 logic                 [COMP_DATA_IDX_BITS-1:0] comp_data_m_index_2_3;
-logic                 [COMP_DATA_IDX_BITS-1:0] comp_data_m_index_3_4;
 
-logic [5:0]           [COMP_DATA_IDX_BITS-1:0] comp_data_m_index_mux;
+logic [5:0]           [COMP_DATA_IDX_BITS-1:0] comp_data_m_index_mux_0_1;
 logic [5:0]           [COMP_DATA_IDX_BITS-1:0] comp_data_m_index_mux_1_2;
 logic [5:0]           [COMP_DATA_IDX_BITS-1:0] comp_data_m_index_mux_2_3;
 logic [5:0]           [COMP_DATA_IDX_BITS-1:0] comp_data_m_index_mux_3_4;
@@ -119,20 +120,16 @@ ame_num_compare #(
                    comp_data_t[0][comp_loop_0_1] }),
     .comp_data_o(comp_data_a),
 
-    .comp_data_mask_i(comp_data_m_mask),
+    .comp_data_mask_i(comp_data_m_mask_0_1),
     .comp_data_index_o(comp_data_a_index)
 );
 
 always_ff @(posedge clk_i or negedge rst_n_i)
 begin
     if (!rst_n_i) begin
-        comp_done_p       <= 'b0;
-        comp_data_m       <= 'b0;
-        comp_data_m_index <= 'b0;
+        comp_done_p <= 'b0;
     end else begin
-        comp_done_p       <= comp_init_p;
-        comp_data_m       <= comp_init_p ? comp_data_a : comp_data_m;
-        comp_data_m_index <= comp_init_p ? comp_data_a_index : comp_data_m_index;
+        comp_done_p <= comp_init_p;
     end
 end
 
@@ -145,8 +142,8 @@ ame_num_approx #(
     .comp_init_i(comp_done_p),
     .comp_done_o(),
 
-    .comp_data_i(comp_data_m),
-    .comp_data_o(comp_data_m_shift)
+    .comp_data_i(comp_data_m_1_2),
+    .comp_data_o(comp_data_m_shift_2_3)
 );
 
 generate
@@ -164,7 +161,7 @@ generate
                 comp_data_p[i][j][2] <= comp_data_t[i][j];
                 comp_data_p[i][j][0] <= comp_data_t[comp_data_a_index][j];
 
-                comp_data_n_shift[i][j] <= comp_data_m_shift - comp_data_s_shift[i][j];
+                comp_data_n_shift[i][j] <= comp_data_m_shift_2_3 - comp_data_s_shift[i][j];
             end
 
             ame_num_scale #(
@@ -220,8 +217,8 @@ generate
             .comp_init_i(comp_init_d),
             .comp_done_o(comp_done_d[i]),
 
-            .comp_data_i({comp_data_t[comp_data_m_index_mux[i]][i],
-                         {comp_data_t[comp_data_m_index_mux[i]][6][COMP_DATA_BITS-COMP_DATA_FRAC_BITS-1:0], {COMP_DATA_FRAC_BITS{1'b0}}}}),
+            .comp_data_i({comp_data_t[comp_data_m_index_mux_0_1[i]][i],
+                         {comp_data_t[comp_data_m_index_mux_0_1[i]][6][COMP_DATA_BITS-COMP_DATA_FRAC_BITS-1:0], {COMP_DATA_FRAC_BITS{1'b0}}}}),
             .comp_data_o(comp_data_d[i])
         );
 
@@ -248,12 +245,17 @@ begin
 
         comp_data_t <= 'b0;
 
-        comp_data_m_mask      <= 'b0;
+        comp_data_m_1_2 <= 'b0;
+
+        comp_data_m_mask_0_1 <= 'b0;
+        comp_data_m_mask_1_2 <= 'b0;
+        comp_data_m_mask_2_3 <= 'b0;
+        comp_data_m_mask_3_4 <= 'b0;
+
         comp_data_m_index_1_2 <= 'b0;
         comp_data_m_index_2_3 <= 'b0;
-        comp_data_m_index_3_4 <= 'b0;
 
-        comp_data_m_index_mux     <= 'b0;
+        comp_data_m_index_mux_0_1 <= 'b0;
         comp_data_m_index_mux_1_2 <= 'b0;
         comp_data_m_index_mux_2_3 <= 'b0;
         comp_data_m_index_mux_3_4 <= 'b0;
@@ -280,13 +282,7 @@ begin
                 comp_loop_0_1 <= affine_param6_i ? 'd0 : 'd2;
 
                 comp_init_p <= comp_init_i;
-                comp_init_c <= 'b0;
-                comp_init_d <= 'b0;
-
                 comp_data_t <= comp_init_i ? comp_data_i : 'b0;
-
-                comp_data_m_mask      <= 'b0;
-                comp_data_m_index_mux <= 'b0;
             end
             PIVOT: begin
                 comp_loop_1_2 <= comp_loop_0_1;
@@ -301,108 +297,80 @@ begin
                         end
                     end
                 end
-                comp_init_c <= 'b0;
-                comp_init_d <= 'b0;
 
-                comp_data_t <= comp_data_t;
+                comp_data_m_1_2      <= comp_data_a;
+                comp_data_m_mask_1_2 <= comp_data_m_mask_0_1;
 
-                comp_data_m_mask      <= comp_data_m_mask;
-                comp_data_m_index_mux <= comp_data_m_index_mux;
+                comp_data_m_index_1_2     <= comp_data_a_index;
+                comp_data_m_index_mux_1_2 <= comp_data_m_index_mux_0_1;
             end
             SCALE: begin
                 comp_loop_2_3 <= comp_loop_1_2;
 
-                comp_init_p <= 'b0;
                 comp_init_s <= 'b0;
                 for (int i = 0; i < 6; i++) begin
                     for (int j = 0; j < 7; j++) begin
-                        if (i[COMP_DATA_IDX_BITS-1:0] == comp_data_m_index) begin
+                        if (i[COMP_DATA_IDX_BITS-1:0] == comp_data_m_index_1_2) begin
                             comp_init_c[i][j] <= 'b0;
                         end else begin
                             comp_init_c[i][j] <= 'b1;
                         end
                     end
                 end
-                comp_init_d <= 'b0;
 
-                comp_data_t <= comp_data_t;
+                comp_data_m_mask_2_3 <= comp_data_m_mask_1_2;
 
-                comp_data_m_mask      <= comp_data_m_mask;
-                comp_data_m_index_mux <= comp_data_m_index_mux;
+                comp_data_m_index_2_3     <= comp_data_m_index_1_2;
+                comp_data_m_index_mux_2_3 <= comp_data_m_index_mux_1_2;
             end
             COMPUTE: begin
                 comp_loop_3_4 <= comp_loop_2_3;
 
-                comp_init_p <= 'b0;
-                comp_init_s <= 'b0;
                 comp_init_c <= 'b0;
-                comp_init_d <= 'b0;
 
-                comp_data_t <= comp_data_t;
-
-                case (comp_data_m_index)
+                case (comp_data_m_index_2_3)
                     'd0:
-                        comp_data_m_mask <= comp_data_m_mask | 6'b00_0001;
+                        comp_data_m_mask_3_4 <= comp_data_m_mask_2_3 | 6'b00_0001;
                     'd1:
-                        comp_data_m_mask <= comp_data_m_mask | 6'b00_0010;
+                        comp_data_m_mask_3_4 <= comp_data_m_mask_2_3 | 6'b00_0010;
                     'd2:
-                        comp_data_m_mask <= comp_data_m_mask | 6'b00_0100;
+                        comp_data_m_mask_3_4 <= comp_data_m_mask_2_3 | 6'b00_0100;
                     'd3:
-                        comp_data_m_mask <= comp_data_m_mask | 6'b00_1000;
+                        comp_data_m_mask_3_4 <= comp_data_m_mask_2_3 | 6'b00_1000;
                     'd4:
-                        comp_data_m_mask <= comp_data_m_mask | 6'b01_0000;
+                        comp_data_m_mask_3_4 <= comp_data_m_mask_2_3 | 6'b01_0000;
                     'd5:
-                        comp_data_m_mask <= comp_data_m_mask | 6'b10_0000;
+                        comp_data_m_mask_3_4 <= comp_data_m_mask_2_3 | 6'b10_0000;
                     default:
-                        comp_data_m_mask <= comp_data_m_mask;
+                        comp_data_m_mask_3_4 <= comp_data_m_mask_2_3;
                 endcase
 
                 for (int i = 0; i < 6; i++) begin
                     if (comp_loop_2_3 == i[2:0]) begin
-                        comp_data_m_index_mux[i] <= comp_data_m_index;
+                        comp_data_m_index_mux_3_4[i] <= comp_data_m_index_2_3;
                     end else begin
-                        comp_data_m_index_mux[i] <= comp_data_m_index_mux[i];
+                        comp_data_m_index_mux_3_4[i] <= comp_data_m_index_mux_2_3[i];
                     end
                 end
             end
             NORMAL: begin
                 comp_loop_0_1 <= (comp_loop_3_4 == 'd5) ? 'b0 : comp_loop_3_4 + 'b1;
 
-                comp_init_p <= 'b1;
-                comp_init_s <= 'b0;
-                comp_init_c <= 'b0;
+                comp_init_p <= (comp_loop_3_4 == 'd5) ? 'b0 : 'b1;
                 comp_init_d <= (comp_loop_3_4 == 'd5) ? 'b1 : 'b0;
-
                 comp_data_t <= comp_data_n;
 
-                comp_data_m_mask      <= comp_data_m_mask;
-                comp_data_m_index_mux <= comp_data_m_index_mux;
+                comp_data_m_mask_0_1 <= comp_data_m_mask_3_4;
+
+                comp_data_m_index_mux_0_1 <= comp_data_m_index_mux_3_4;
             end
             DIVIDE: begin
                 comp_loop_0_1 <= 'b0;
 
-                comp_init_p <= 'b0;
-                comp_init_s <= 'b0;
-                comp_init_c <= 'b0;
                 comp_init_d <= 'b0;
-
                 comp_data_t <= 'b0;
 
-                comp_data_m_mask      <= comp_data_m_mask;
-                comp_data_m_index_mux <= comp_data_m_index_mux;
-            end
-            default: begin
-                comp_loop_0_1 <= 'b0;
-
-                comp_init_p <= 'b0;
-                comp_init_s <= 'b0;
-                comp_init_c <= 'b0;
-                comp_init_d <= 'b0;
-
-                comp_data_t <= 'b0;
-
-                comp_data_m_mask      <= 'b0;
-                comp_data_m_index_mux <= 'b0;
+                comp_data_m_mask_0_1 <= 'b0;
             end
         endcase
 

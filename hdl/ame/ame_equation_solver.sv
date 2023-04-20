@@ -49,59 +49,53 @@ typedef enum logic [2:0] {
 
 state_t ctl_sta;
 
-logic       comp_done;
+logic comp_done;
 
-logic [2:0] comp_loop_0_1;
-logic [2:0] comp_loop_1_2;
-logic [2:0] comp_loop_2_3;
-logic [2:0] comp_loop_3_4;
-
-logic                     [COMP_DATA_BITS-1:0] comp_data_a;
-logic                 [COMP_DATA_IDX_BITS-1:0] comp_data_a_index;
-
-logic                     [COMP_DATA_BITS-1:0] comp_data_m_1_2;
-logic             [$clog2(COMP_DATA_BITS)-1:0] comp_data_m_shift_2_3;
-
+logic                                    [2:0] comp_loop_0_1;
 logic [5:0]                                    comp_data_m_mask_0_1;
-logic [5:0]                                    comp_data_m_mask_1_2;
-logic [5:0]                                    comp_data_m_mask_2_3;
-logic [5:0]                                    comp_data_m_mask_3_4;
-
-logic                 [COMP_DATA_IDX_BITS-1:0] comp_data_m_index_1_2;
-logic                 [COMP_DATA_IDX_BITS-1:0] comp_data_m_index_2_3;
-
 logic [5:0]           [COMP_DATA_IDX_BITS-1:0] comp_data_m_index_mux_0_1;
+logic [5:0] [6:0]         [COMP_DATA_BITS-1:0] comp_data_t_0_1;
+logic                                          comp_init_p_0_1;
+logic                     [COMP_DATA_BITS-1:0] comp_data_a_1;
+logic                 [COMP_DATA_IDX_BITS-1:0] comp_data_a_index_1;
+
+logic                                    [2:0] comp_loop_1_2;
+logic                     [COMP_DATA_BITS-1:0] comp_data_m_1_2;
+logic [5:0]                                    comp_data_m_mask_1_2;
+logic                 [COMP_DATA_IDX_BITS-1:0] comp_data_m_index_1_2;
 logic [5:0]           [COMP_DATA_IDX_BITS-1:0] comp_data_m_index_mux_1_2;
+logic                                          comp_done_p_1_2;
+logic [5:0] [6:0] [3:0]   [COMP_DATA_BITS-1:0] comp_data_p_1_2;
+logic [5:0] [6:0]                              comp_init_s_1_2;
+
+logic                                    [2:0] comp_loop_2_3;
+logic             [$clog2(COMP_DATA_BITS)-1:0] comp_data_m_shift_2_3;
+logic [5:0]                                    comp_data_m_mask_2_3;
+logic                 [COMP_DATA_IDX_BITS-1:0] comp_data_m_index_2_3;
 logic [5:0]           [COMP_DATA_IDX_BITS-1:0] comp_data_m_index_mux_2_3;
+logic [5:0] [6:0] [$clog2(COMP_DATA_BITS)-1:0] comp_data_s_shift_2_3;
+logic [5:0] [6:0] [3:0]   [COMP_DATA_BITS-1:0] comp_data_s_2_3;
+logic [5:0] [6:0]                              comp_init_c_2_3;
+
+logic                                    [2:0] comp_loop_3_4;
+logic [5:0]                                    comp_data_m_mask_3_4;
 logic [5:0]           [COMP_DATA_IDX_BITS-1:0] comp_data_m_index_mux_3_4;
+logic [5:0] [6:0] [$clog2(COMP_DATA_BITS)-1:0] comp_data_n_shift_3_4;
+logic [5:0] [6:0]                              comp_done_c_3_4;
+logic [5:0] [6:0]         [COMP_DATA_BITS-1:0] comp_data_c_3_4;
 
-logic [5:0] [6:0] [$clog2(COMP_DATA_BITS)-1:0] comp_data_s_shift;
-logic [5:0] [6:0] [$clog2(COMP_DATA_BITS)-1:0] comp_data_n_shift;
+logic [5:0] [6:0]         [COMP_DATA_BITS-1:0] comp_data_n_4;
 
-logic [5:0] [6:0]         [COMP_DATA_BITS-1:0] comp_data_t;
+logic                                          comp_init_d_4_5;
+logic [5:0]                                    comp_done_d_5;
+logic [5:0]               [COMP_DATA_BITS-1:0] comp_data_d_5;
 
-logic                                          comp_init_p;
-logic                                          comp_done_p;
-logic [5:0] [6:0] [3:0]   [COMP_DATA_BITS-1:0] comp_data_p;
-
-logic [5:0] [6:0]                              comp_init_s;
-logic [5:0] [6:0] [3:0]   [COMP_DATA_BITS-1:0] comp_data_s;
-
-logic [5:0] [6:0]                              comp_init_c;
-logic [5:0] [6:0]                              comp_done_c;
-logic [5:0] [6:0]         [COMP_DATA_BITS-1:0] comp_data_c;
-
-logic [5:0] [6:0]         [COMP_DATA_BITS-1:0] comp_data_n;
-
-logic                                          comp_init_d;
-logic [5:0]                                    comp_done_d;
-logic [5:0]               [COMP_DATA_BITS-1:0] comp_data_d;
-
-wire comp_data_zero = ~|comp_data_a;
-wire comp_data_done =  &comp_done_d & ~comp_init_d;
+wire comp_data_zero = ~|comp_data_a_1;
+wire comp_data_done =  &comp_done_d_5 & ~comp_init_d_4_5;
 
 assign comp_done_o = comp_done;
 
+// Stage: 1 / Output Register: 1 - 2
 ame_num_compare #(
     .COMP_DATA_BITS(64),
     .COMP_DATA_IDX_BITS(3)
@@ -109,37 +103,84 @@ ame_num_compare #(
     .clk_i(clk_i),
     .rst_n_i(rst_n_i),
 
-    .comp_init_i(comp_init_p),
+    .comp_init_i(comp_init_p_0_1),
     .comp_done_o(),
 
-    .comp_data_i({ comp_data_t[5][comp_loop_0_1],
-                   comp_data_t[4][comp_loop_0_1],
-                   comp_data_t[3][comp_loop_0_1],
-                   comp_data_t[2][comp_loop_0_1],
-                   comp_data_t[1][comp_loop_0_1],
-                   comp_data_t[0][comp_loop_0_1] }),
-    .comp_data_o(comp_data_a),
+    .comp_data_i({ comp_data_t_0_1[5][comp_loop_0_1],
+                   comp_data_t_0_1[4][comp_loop_0_1],
+                   comp_data_t_0_1[3][comp_loop_0_1],
+                   comp_data_t_0_1[2][comp_loop_0_1],
+                   comp_data_t_0_1[1][comp_loop_0_1],
+                   comp_data_t_0_1[0][comp_loop_0_1] }),
+    .comp_data_o(comp_data_a_1),
 
     .comp_data_mask_i(comp_data_m_mask_0_1),
-    .comp_data_index_o(comp_data_a_index)
+    .comp_data_index_o(comp_data_a_index_1)
 );
+
+generate
+    for (genvar i = 0; i < 6; i++) begin
+        for (genvar j = 0; j < 7; j++) begin
+            always_ff @(posedge clk_i) begin
+                if (i[COMP_DATA_IDX_BITS-1:0] == comp_data_a_index_1) begin
+                    comp_data_p_1_2[i][j][3] <= 'b1;
+                    comp_data_p_1_2[i][j][1] <= 'b0;
+                end else begin
+                    comp_data_p_1_2[i][j][3] <= comp_data_a_1;
+                    comp_data_p_1_2[i][j][1] <= comp_data_t_0_1[i][comp_loop_0_1];
+                end
+
+                comp_data_p_1_2[i][j][2] <= comp_data_t_0_1[i][j];
+                comp_data_p_1_2[i][j][0] <= comp_data_t_0_1[comp_data_a_index_1][j];
+            end
+        end
+    end
+endgenerate
 
 always_ff @(posedge clk_i or negedge rst_n_i)
 begin
     if (!rst_n_i) begin
-        comp_done_p <= 'b0;
+        comp_loop_1_2 <= 'b0;
+
+        comp_done_p_1_2 <= 'b0;
+        comp_init_s_1_2 <= 'b0;
+
+        comp_data_m_1_2 <= 'b0;
+        comp_data_m_mask_1_2 <= 'b0;
+
+        comp_data_m_index_1_2 <= 'b0;
+        comp_data_m_index_mux_1_2 <= 'b0;
     end else begin
-        comp_done_p <= comp_init_p;
+        comp_loop_1_2 <= comp_loop_0_1;
+
+        comp_done_p_1_2 <= comp_init_p_0_1;
+        for (int i = 0; i < 6; i++) begin
+            for (int j = 0; j < 7; j++) begin
+                if (i[COMP_DATA_IDX_BITS-1:0] == comp_data_a_index_1) begin
+                    comp_init_s_1_2[i][j] <= 'b0;
+                end else begin
+                    comp_init_s_1_2[i][j] <= 'b1;
+                end
+            end
+        end
+
+        comp_data_m_1_2      <= comp_data_a_1;
+        comp_data_m_mask_1_2 <= comp_data_m_mask_0_1;
+
+        comp_data_m_index_1_2     <= comp_data_a_index_1;
+        comp_data_m_index_mux_1_2 <= comp_data_m_index_mux_0_1;
     end
 end
 
+
+// Stage: 2 / Output Register: 2 - 3
 ame_num_approx #(
     .COMP_DATA_BITS(64)
 ) ame_num_approx (
     .clk_i(clk_i),
     .rst_n_i(rst_n_i),
 
-    .comp_init_i(comp_done_p),
+    .comp_init_i(comp_done_p_1_2),
     .comp_done_o(),
 
     .comp_data_i(comp_data_m_1_2),
@@ -149,35 +190,61 @@ ame_num_approx #(
 generate
     for (genvar i = 0; i < 6; i++) begin
         for (genvar j = 0; j < 7; j++) begin
-            always_ff @(posedge clk_i) begin
-                if (i[COMP_DATA_IDX_BITS-1:0] == comp_data_a_index) begin
-                    comp_data_p[i][j][3] <= 'b1;
-                    comp_data_p[i][j][1] <= 'b0;
-                end else begin
-                    comp_data_p[i][j][3] <= comp_data_a;
-                    comp_data_p[i][j][1] <= comp_data_t[i][comp_loop_0_1];
-                end
-
-                comp_data_p[i][j][2] <= comp_data_t[i][j];
-                comp_data_p[i][j][0] <= comp_data_t[comp_data_a_index][j];
-
-                comp_data_n_shift[i][j] <= comp_data_m_shift_2_3 - comp_data_s_shift[i][j];
-            end
-
             ame_num_scale #(
                 .COMP_DATA_BITS(64)
             ) ame_num_scale (
                 .clk_i(clk_i),
                 .rst_n_i(rst_n_i),
 
-                .comp_init_i(comp_init_s[i][j]),
+                .comp_init_i(comp_init_s_1_2[i][j]),
                 .comp_done_o(),
 
-                .comp_shift_o(comp_data_s_shift[i][j]),
+                .comp_shift_o(comp_data_s_shift_2_3[i][j]),
 
-                .comp_data_i(comp_data_p[i][j]),
-                .comp_data_o(comp_data_s[i][j])
+                .comp_data_i(comp_data_p_1_2[i][j]),
+                .comp_data_o(comp_data_s_2_3[i][j])
             );
+        end
+    end
+endgenerate
+
+always_ff @(posedge clk_i or negedge rst_n_i)
+begin
+    if (!rst_n_i) begin
+        comp_loop_2_3 <= 'b0;
+
+        comp_init_c_2_3 <= 'b0;
+
+        comp_data_m_mask_2_3 <= 'b0;
+        comp_data_m_index_2_3 <= 'b0;
+        comp_data_m_index_mux_2_3 <= 'b0;
+    end else begin
+        comp_loop_2_3 <= comp_loop_1_2;
+
+        for (int i = 0; i < 6; i++) begin
+            for (int j = 0; j < 7; j++) begin
+                if (i[COMP_DATA_IDX_BITS-1:0] == comp_data_m_index_1_2) begin
+                    comp_init_c_2_3[i][j] <= 'b0;
+                end else begin
+                    comp_init_c_2_3[i][j] <= 'b1;
+                end
+            end
+        end
+
+        comp_data_m_mask_2_3 <= comp_data_m_mask_1_2;
+
+        comp_data_m_index_2_3     <= comp_data_m_index_1_2;
+        comp_data_m_index_mux_2_3 <= comp_data_m_index_mux_1_2;
+    end
+end
+
+// Stage: 3 / Output Register: 3 - 4
+generate
+    for (genvar i = 0; i < 6; i++) begin
+        for (genvar j = 0; j < 7; j++) begin
+            always_ff @(posedge clk_i) begin
+                comp_data_n_shift_3_4[i][j] <= comp_data_m_shift_2_3 - comp_data_s_shift_2_3[i][j];
+            end
 
             ame_num_compute #(
                 .COMP_DATA_BITS(64)
@@ -185,44 +252,102 @@ generate
                 .clk_i(clk_i),
                 .rst_n_i(rst_n_i),
 
-                .comp_init_i(comp_init_c[i][j]),
-                .comp_done_o(comp_done_c[i][j]),
+                .comp_init_i(comp_init_c_2_3[i][j]),
+                .comp_done_o(comp_done_c_3_4[i][j]),
 
-                .comp_data_i(comp_data_s[i][j]),
-                .comp_data_o(comp_data_c[i][j])
+                .comp_data_i(comp_data_s_2_3[i][j]),
+                .comp_data_o(comp_data_c_3_4[i][j])
             );
+        end
+    end
+endgenerate
 
+always_ff @(posedge clk_i or negedge rst_n_i)
+begin
+    if (!rst_n_i) begin
+        comp_loop_3_4 <= 'b0;
+
+        comp_data_m_mask_3_4 <= 'b0;
+        comp_data_m_index_mux_3_4 <= 'b0;
+    end else begin
+        comp_loop_3_4 <= comp_loop_2_3;
+
+        case (comp_data_m_index_2_3)
+            'd0:
+                comp_data_m_mask_3_4 <= comp_data_m_mask_2_3 | 6'b00_0001;
+            'd1:
+                comp_data_m_mask_3_4 <= comp_data_m_mask_2_3 | 6'b00_0010;
+            'd2:
+                comp_data_m_mask_3_4 <= comp_data_m_mask_2_3 | 6'b00_0100;
+            'd3:
+                comp_data_m_mask_3_4 <= comp_data_m_mask_2_3 | 6'b00_1000;
+            'd4:
+                comp_data_m_mask_3_4 <= comp_data_m_mask_2_3 | 6'b01_0000;
+            'd5:
+                comp_data_m_mask_3_4 <= comp_data_m_mask_2_3 | 6'b10_0000;
+            default:
+                comp_data_m_mask_3_4 <= comp_data_m_mask_2_3;
+        endcase
+
+        for (int i = 0; i < 6; i++) begin
+            if (comp_loop_2_3 == i[2:0]) begin
+                comp_data_m_index_mux_3_4[i] <= comp_data_m_index_2_3;
+            end else begin
+                comp_data_m_index_mux_3_4[i] <= comp_data_m_index_mux_2_3[i];
+            end
+        end
+    end
+end
+
+// Stage: 4 / Output Register: None
+generate
+    for (genvar i = 0; i < 6; i++) begin
+        for (genvar j = 0; j < 7; j++) begin
             ame_num_normal #(
                 .COMP_DATA_BITS(64)
             ) ame_num_normal (
                 .clk_i(clk_i),
                 .rst_n_i(rst_n_i),
 
-                .comp_init_i(comp_done_c[i][j]),
+                .comp_init_i(comp_done_c_3_4[i][j]),
                 .comp_done_o(),
 
-                .comp_shift_i(comp_data_n_shift[i][j]),
+                .comp_shift_i(comp_data_n_shift_3_4[i][j]),
 
-                .comp_data_i(comp_data_c[i][j]),
-                .comp_data_o(comp_data_n[i][j])
+                .comp_data_i(comp_data_c_3_4[i][j]),
+                .comp_data_o(comp_data_n_4[i][j])
             );
         end
+    end
+endgenerate
 
+always_ff @(posedge clk_i or negedge rst_n_i)
+begin
+    if (!rst_n_i) begin
+
+    end else begin
+
+    end
+end
+
+// Stage: 5 / Output Register: 5
+generate
+    for (genvar i = 0; i < 6; i++) begin
         ame_num_divide #(
             .COMP_DATA_BITS(64)
         ) ame_num_divide (
             .clk_i(clk_i),
             .rst_n_i(rst_n_i),
 
-            .comp_init_i(comp_init_d),
-            .comp_done_o(comp_done_d[i]),
+            .comp_init_i(comp_init_d_4_5),
+            .comp_done_o(comp_done_d_5[i]),
 
-            .comp_data_i({comp_data_t[comp_data_m_index_mux_0_1[i]][i],
-                         {comp_data_t[comp_data_m_index_mux_0_1[i]][6][COMP_DATA_BITS-COMP_DATA_FRAC_BITS-1:0], {COMP_DATA_FRAC_BITS{1'b0}}}}),
-            .comp_data_o(comp_data_d[i])
+            .comp_data_i({comp_data_t_0_1[comp_data_m_index_mux_0_1[i]][i],
+                         {comp_data_t_0_1[comp_data_m_index_mux_0_1[i]][6][COMP_DATA_BITS-COMP_DATA_FRAC_BITS-1:0], {COMP_DATA_FRAC_BITS{1'b0}}}}),
+            .comp_data_o(comp_data_d_5[i])
         );
 
-        assign comp_data_o[i] = comp_data_d[i];
+        assign comp_data_o[i] = comp_data_d_5[i];
     end
 endgenerate
 
@@ -234,143 +359,60 @@ begin
         comp_done <= 'b0;
 
         comp_loop_0_1 <= 'b0;
-        comp_loop_1_2 <= 'b0;
-        comp_loop_2_3 <= 'b0;
-        comp_loop_3_4 <= 'b0;
-
-        comp_init_p <= 'b0;
-        comp_init_s <= 'b0;
-        comp_init_c <= 'b0;
-        comp_init_d <= 'b0;
-
-        comp_data_t <= 'b0;
-
-        comp_data_m_1_2 <= 'b0;
-
+        comp_init_p_0_1 <= 'b0;
+        comp_data_t_0_1 <= 'b0;
         comp_data_m_mask_0_1 <= 'b0;
-        comp_data_m_mask_1_2 <= 'b0;
-        comp_data_m_mask_2_3 <= 'b0;
-        comp_data_m_mask_3_4 <= 'b0;
-
-        comp_data_m_index_1_2 <= 'b0;
-        comp_data_m_index_2_3 <= 'b0;
-
         comp_data_m_index_mux_0_1 <= 'b0;
-        comp_data_m_index_mux_1_2 <= 'b0;
-        comp_data_m_index_mux_2_3 <= 'b0;
-        comp_data_m_index_mux_3_4 <= 'b0;
+
+        comp_init_d_4_5 <= 'b0;
     end else begin
-        case (ctl_sta)
-            IDLE:
-                ctl_sta <= comp_init_i ? PIVOT : IDLE;
-            PIVOT:
-                ctl_sta <= comp_data_zero ? IDLE : SCALE;
-            SCALE:
-                ctl_sta <= COMPUTE;
-            COMPUTE:
-                ctl_sta <= NORMAL;
-            NORMAL:
-                ctl_sta <= (comp_loop_3_4 == 'd5) ? DIVIDE : PIVOT;
-            DIVIDE:
-                ctl_sta <= comp_data_done ? IDLE : DIVIDE;
-            default:
-                ctl_sta <= IDLE;
-        endcase
+        if (comp_init_i) begin
+            comp_loop_0_1 <= affine_param6_i ? 'd0 : 'd2;
+
+            comp_init_p_0_1 <= 'b1;
+            comp_data_t_0_1 <= comp_data_i;
+
+            comp_data_m_mask_0_1 <= 'b0;
+            comp_data_m_index_mux_0_1 <= 'b0;
+
+            comp_init_d_4_5 <= 'b0;
+        end else begin
+            comp_loop_0_1 <= (comp_loop_3_4 == 'd5) ? 'b0 : comp_loop_3_4 + 'b1;
+
+            comp_init_p_0_1 <= (comp_loop_3_4 == 'd5) ? 'b0 : 'b1;
+            comp_data_t_0_1 <= comp_data_n_4;
+
+            comp_data_m_mask_0_1 <= comp_data_m_mask_3_4;
+            comp_data_m_index_mux_0_1 <= comp_data_m_index_mux_3_4;
+
+            comp_init_d_4_5 <= (comp_loop_3_4 == 'd5) ? 'b1 : 'b0;
+        end
 
         case (ctl_sta)
             IDLE: begin
-                comp_loop_0_1 <= affine_param6_i ? 'd0 : 'd2;
-
-                comp_init_p <= comp_init_i;
-                comp_data_t <= comp_init_i ? comp_data_i : 'b0;
+                ctl_sta <= comp_init_i ? PIVOT : IDLE;
             end
             PIVOT: begin
-                comp_loop_1_2 <= comp_loop_0_1;
-
-                comp_init_p <= 'b0;
-                for (int i = 0; i < 6; i++) begin
-                    for (int j = 0; j < 7; j++) begin
-                        if (i[COMP_DATA_IDX_BITS-1:0] == comp_data_a_index) begin
-                            comp_init_s[i][j] <= 'b0;
-                        end else begin
-                            comp_init_s[i][j] <= 'b1;
-                        end
-                    end
-                end
-
-                comp_data_m_1_2      <= comp_data_a;
-                comp_data_m_mask_1_2 <= comp_data_m_mask_0_1;
-
-                comp_data_m_index_1_2     <= comp_data_a_index;
-                comp_data_m_index_mux_1_2 <= comp_data_m_index_mux_0_1;
+                ctl_sta <= comp_data_zero ? IDLE : SCALE;
             end
             SCALE: begin
-                comp_loop_2_3 <= comp_loop_1_2;
-
-                comp_init_s <= 'b0;
-                for (int i = 0; i < 6; i++) begin
-                    for (int j = 0; j < 7; j++) begin
-                        if (i[COMP_DATA_IDX_BITS-1:0] == comp_data_m_index_1_2) begin
-                            comp_init_c[i][j] <= 'b0;
-                        end else begin
-                            comp_init_c[i][j] <= 'b1;
-                        end
-                    end
-                end
-
-                comp_data_m_mask_2_3 <= comp_data_m_mask_1_2;
-
-                comp_data_m_index_2_3     <= comp_data_m_index_1_2;
-                comp_data_m_index_mux_2_3 <= comp_data_m_index_mux_1_2;
+                ctl_sta <= COMPUTE;
             end
             COMPUTE: begin
-                comp_loop_3_4 <= comp_loop_2_3;
-
-                comp_init_c <= 'b0;
-
-                case (comp_data_m_index_2_3)
-                    'd0:
-                        comp_data_m_mask_3_4 <= comp_data_m_mask_2_3 | 6'b00_0001;
-                    'd1:
-                        comp_data_m_mask_3_4 <= comp_data_m_mask_2_3 | 6'b00_0010;
-                    'd2:
-                        comp_data_m_mask_3_4 <= comp_data_m_mask_2_3 | 6'b00_0100;
-                    'd3:
-                        comp_data_m_mask_3_4 <= comp_data_m_mask_2_3 | 6'b00_1000;
-                    'd4:
-                        comp_data_m_mask_3_4 <= comp_data_m_mask_2_3 | 6'b01_0000;
-                    'd5:
-                        comp_data_m_mask_3_4 <= comp_data_m_mask_2_3 | 6'b10_0000;
-                    default:
-                        comp_data_m_mask_3_4 <= comp_data_m_mask_2_3;
-                endcase
-
-                for (int i = 0; i < 6; i++) begin
-                    if (comp_loop_2_3 == i[2:0]) begin
-                        comp_data_m_index_mux_3_4[i] <= comp_data_m_index_2_3;
-                    end else begin
-                        comp_data_m_index_mux_3_4[i] <= comp_data_m_index_mux_2_3[i];
-                    end
-                end
+                ctl_sta <= NORMAL;
             end
             NORMAL: begin
-                comp_loop_0_1 <= (comp_loop_3_4 == 'd5) ? 'b0 : comp_loop_3_4 + 'b1;
-
-                comp_init_p <= (comp_loop_3_4 == 'd5) ? 'b0 : 'b1;
-                comp_init_d <= (comp_loop_3_4 == 'd5) ? 'b1 : 'b0;
-                comp_data_t <= comp_data_n;
-
-                comp_data_m_mask_0_1 <= comp_data_m_mask_3_4;
-
-                comp_data_m_index_mux_0_1 <= comp_data_m_index_mux_3_4;
+                ctl_sta <= (comp_loop_3_4 == 'd5) ? DIVIDE : PIVOT;
             end
             DIVIDE: begin
+                ctl_sta <= comp_data_done ? IDLE : DIVIDE;
+
                 comp_loop_0_1 <= 'b0;
 
-                comp_init_d <= 'b0;
-                comp_data_t <= 'b0;
-
+                comp_data_t_0_1 <= 'b0;
                 comp_data_m_mask_0_1 <= 'b0;
+
+                comp_init_d_4_5 <= 'b0;
             end
         endcase
 

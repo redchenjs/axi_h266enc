@@ -89,6 +89,7 @@ always begin
     };
 
     #5 comp_init_i = 1'b1;
+    #5 comp_init_i = 1'b0;
 
     #1000 comp_init_i = 1'b0;
 

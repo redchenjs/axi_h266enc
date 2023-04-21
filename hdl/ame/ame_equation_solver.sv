@@ -47,10 +47,9 @@ typedef enum logic [2:0] {
     DIVIDE  = 'd5
 } state_t;
 
-state_t ctl_sta;
-
 logic comp_done;
 
+logic                                          comp_pipe_0_1;
 logic                                    [2:0] comp_loop_0_1;
 logic [5:0]                                    comp_data_m_mask_0_1;
 logic [5:0]           [COMP_DATA_IDX_BITS-1:0] comp_data_m_index_mux_0_1;
@@ -59,6 +58,7 @@ logic                                          comp_init_p_0_1;
 logic                     [COMP_DATA_BITS-1:0] comp_data_a_1;
 logic                 [COMP_DATA_IDX_BITS-1:0] comp_data_a_index_1;
 
+logic                                          comp_pipe_1_2;
 logic                                    [2:0] comp_loop_1_2;
 logic                     [COMP_DATA_BITS-1:0] comp_data_m_1_2;
 logic [5:0]                                    comp_data_m_mask_1_2;
@@ -68,6 +68,7 @@ logic                                          comp_done_p_1_2;
 logic [5:0] [6:0] [3:0]   [COMP_DATA_BITS-1:0] comp_data_p_1_2;
 logic [5:0] [6:0]                              comp_init_s_1_2;
 
+logic                                          comp_pipe_2_3;
 logic                                    [2:0] comp_loop_2_3;
 logic             [$clog2(COMP_DATA_BITS)-1:0] comp_data_m_shift_2_3;
 logic [5:0]                                    comp_data_m_mask_2_3;
@@ -77,6 +78,7 @@ logic [5:0] [6:0] [$clog2(COMP_DATA_BITS)-1:0] comp_data_s_shift_2_3;
 logic [5:0] [6:0] [3:0]   [COMP_DATA_BITS-1:0] comp_data_s_2_3;
 logic [5:0] [6:0]                              comp_init_c_2_3;
 
+logic                                          comp_pipe_3_4;
 logic                                    [2:0] comp_loop_3_4;
 logic [5:0]                                    comp_data_m_mask_3_4;
 logic [5:0]           [COMP_DATA_IDX_BITS-1:0] comp_data_m_index_mux_3_4;
@@ -140,6 +142,7 @@ endgenerate
 always_ff @(posedge clk_i or negedge rst_n_i)
 begin
     if (!rst_n_i) begin
+        comp_pipe_1_2 <= 'b0;
         comp_loop_1_2 <= 'b0;
 
         comp_done_p_1_2 <= 'b0;
@@ -151,6 +154,7 @@ begin
         comp_data_m_index_1_2 <= 'b0;
         comp_data_m_index_mux_1_2 <= 'b0;
     end else begin
+        comp_pipe_1_2 <= comp_pipe_0_1;
         comp_loop_1_2 <= comp_loop_0_1;
 
         comp_done_p_1_2 <= comp_init_p_0_1;
@@ -211,6 +215,7 @@ endgenerate
 always_ff @(posedge clk_i or negedge rst_n_i)
 begin
     if (!rst_n_i) begin
+        comp_pipe_2_3 <= 'b0;
         comp_loop_2_3 <= 'b0;
 
         comp_init_c_2_3 <= 'b0;
@@ -219,6 +224,7 @@ begin
         comp_data_m_index_2_3 <= 'b0;
         comp_data_m_index_mux_2_3 <= 'b0;
     end else begin
+        comp_pipe_2_3 <= comp_pipe_1_2;
         comp_loop_2_3 <= comp_loop_1_2;
 
         for (int i = 0; i < 6; i++) begin
@@ -265,11 +271,13 @@ endgenerate
 always_ff @(posedge clk_i or negedge rst_n_i)
 begin
     if (!rst_n_i) begin
+        comp_pipe_3_4 <= 'b0;
         comp_loop_3_4 <= 'b0;
 
         comp_data_m_mask_3_4 <= 'b0;
         comp_data_m_index_mux_3_4 <= 'b0;
     end else begin
+        comp_pipe_3_4 <= comp_pipe_2_3;
         comp_loop_3_4 <= comp_loop_2_3;
 
         case (comp_data_m_index_2_3)
@@ -324,9 +332,40 @@ endgenerate
 always_ff @(posedge clk_i or negedge rst_n_i)
 begin
     if (!rst_n_i) begin
+        comp_pipe_0_1 <= 'b0;
+        comp_loop_0_1 <= 'b0;
 
+        comp_init_p_0_1 <= 'b0;
+        comp_data_t_0_1 <= 'b0;
+
+        comp_data_m_mask_0_1 <= 'b0;
+        comp_data_m_index_mux_0_1 <= 'b0;
+
+        comp_init_d_4_5 <= 'b0;
     end else begin
+        if (comp_init_i) begin
+            comp_pipe_0_1 <= 'b1;
+            comp_loop_0_1 <= affine_param6_i ? 'd0 : 'd2;
 
+            comp_init_p_0_1 <= 'b1;
+            comp_data_t_0_1 <= comp_data_i;
+
+            comp_data_m_mask_0_1 <= 'b0;
+            comp_data_m_index_mux_0_1 <= 'b0;
+
+            comp_init_d_4_5 <= 'b0;
+        end else begin
+            comp_pipe_0_1 <= (comp_loop_3_4 == 'd5) ? 'b0 : comp_pipe_3_4;
+            comp_loop_0_1 <= (comp_loop_3_4 == 'd5) ? 'b0 : comp_loop_3_4 + comp_pipe_3_4;
+
+            comp_init_p_0_1 <= (comp_loop_3_4 == 'd5) ? 'b0 : comp_pipe_3_4;
+            comp_data_t_0_1 <= comp_data_n_4;
+
+            comp_data_m_mask_0_1 <= comp_data_m_mask_3_4;
+            comp_data_m_index_mux_0_1 <= comp_data_m_index_mux_3_4;
+
+            comp_init_d_4_5 <= (comp_loop_3_4 == 'd5) ? comp_pipe_3_4 : 'b0;
+        end
     end
 end
 
@@ -350,74 +389,5 @@ generate
         assign comp_data_o[i] = comp_data_d_5[i];
     end
 endgenerate
-
-always_ff @(posedge clk_i or negedge rst_n_i)
-begin
-    if (!rst_n_i) begin
-        ctl_sta <= IDLE;
-
-        comp_done <= 'b0;
-
-        comp_loop_0_1 <= 'b0;
-        comp_init_p_0_1 <= 'b0;
-        comp_data_t_0_1 <= 'b0;
-        comp_data_m_mask_0_1 <= 'b0;
-        comp_data_m_index_mux_0_1 <= 'b0;
-
-        comp_init_d_4_5 <= 'b0;
-    end else begin
-        if (comp_init_i) begin
-            comp_loop_0_1 <= affine_param6_i ? 'd0 : 'd2;
-
-            comp_init_p_0_1 <= 'b1;
-            comp_data_t_0_1 <= comp_data_i;
-
-            comp_data_m_mask_0_1 <= 'b0;
-            comp_data_m_index_mux_0_1 <= 'b0;
-
-            comp_init_d_4_5 <= 'b0;
-        end else begin
-            comp_loop_0_1 <= (comp_loop_3_4 == 'd5) ? 'b0 : comp_loop_3_4 + 'b1;
-
-            comp_init_p_0_1 <= (comp_loop_3_4 == 'd5) ? 'b0 : 'b1;
-            comp_data_t_0_1 <= comp_data_n_4;
-
-            comp_data_m_mask_0_1 <= comp_data_m_mask_3_4;
-            comp_data_m_index_mux_0_1 <= comp_data_m_index_mux_3_4;
-
-            comp_init_d_4_5 <= (comp_loop_3_4 == 'd5) ? 'b1 : 'b0;
-        end
-
-        case (ctl_sta)
-            IDLE: begin
-                ctl_sta <= comp_init_i ? PIVOT : IDLE;
-            end
-            PIVOT: begin
-                ctl_sta <= comp_data_zero ? IDLE : SCALE;
-            end
-            SCALE: begin
-                ctl_sta <= COMPUTE;
-            end
-            COMPUTE: begin
-                ctl_sta <= NORMAL;
-            end
-            NORMAL: begin
-                ctl_sta <= (comp_loop_3_4 == 'd5) ? DIVIDE : PIVOT;
-            end
-            DIVIDE: begin
-                ctl_sta <= comp_data_done ? IDLE : DIVIDE;
-
-                comp_loop_0_1 <= 'b0;
-
-                comp_data_t_0_1 <= 'b0;
-                comp_data_m_mask_0_1 <= 'b0;
-
-                comp_init_d_4_5 <= 'b0;
-            end
-        endcase
-
-        comp_done <= ((ctl_sta == PIVOT) & comp_data_zero) | ((ctl_sta == DIVIDE) & comp_data_done);
-    end
-end
 
 endmodule

@@ -38,59 +38,29 @@ module ame_equation_solver #(
     output logic [5:0] [COMP_DATA_BITS-1:0] comp_data_o
 );
 
-typedef enum logic [2:0] {
-    IDLE    = 'd0,
-    PIVOT   = 'd1,
-    SCALE   = 'd2,
-    COMPUTE = 'd3,
-    NORMAL  = 'd4,
-    DIVIDE  = 'd5
+typedef enum logic [1:0] {
+    IDLE   = 'd0,
+    LOAD_A = 'd1,
+    LOAD_B = 'd2
 } state_t;
+
+state_t ctl_sta;
 
 logic comp_done;
 
-logic                                          comp_pipe_0_1;
-logic                                    [2:0] comp_loop_0_1;
-logic [5:0]                                    comp_data_m_mask_0_1;
-logic [5:0]           [COMP_DATA_IDX_BITS-1:0] comp_data_m_index_mux_0_1;
-logic [5:0] [6:0]         [COMP_DATA_BITS-1:0] comp_data_t_0_1;
-logic                                          comp_init_p_0_1;
-logic                     [COMP_DATA_BITS-1:0] comp_data_a_1;
-logic                 [COMP_DATA_IDX_BITS-1:0] comp_data_a_index_1;
+// Stage 0 / 5 Registers
+logic                                  comp_pipe_0_1;
+logic                            [2:0] comp_loop_0_1;
+logic [5:0]                            comp_data_m_mask_0_1;
+logic [5:0]   [COMP_DATA_IDX_BITS-1:0] comp_data_m_index_mux_0_1;
+logic [5:0] [6:0] [COMP_DATA_BITS-1:0] comp_data_t_0_1;
+logic                                  comp_init_p_0_1;
+logic             [COMP_DATA_BITS-1:0] comp_data_a_1;
+logic         [COMP_DATA_IDX_BITS-1:0] comp_data_a_index_1;
 
-logic                                          comp_pipe_1_2;
-logic                                    [2:0] comp_loop_1_2;
-logic                     [COMP_DATA_BITS-1:0] comp_data_m_1_2;
-logic [5:0]                                    comp_data_m_mask_1_2;
-logic                 [COMP_DATA_IDX_BITS-1:0] comp_data_m_index_1_2;
-logic [5:0]           [COMP_DATA_IDX_BITS-1:0] comp_data_m_index_mux_1_2;
-logic                                          comp_done_p_1_2;
-logic [5:0] [6:0] [3:0]   [COMP_DATA_BITS-1:0] comp_data_p_1_2;
-logic [5:0] [6:0]                              comp_init_s_1_2;
-
-logic                                          comp_pipe_2_3;
-logic                                    [2:0] comp_loop_2_3;
-logic             [$clog2(COMP_DATA_BITS)-1:0] comp_data_m_shift_2_3;
-logic [5:0]                                    comp_data_m_mask_2_3;
-logic                 [COMP_DATA_IDX_BITS-1:0] comp_data_m_index_2_3;
-logic [5:0]           [COMP_DATA_IDX_BITS-1:0] comp_data_m_index_mux_2_3;
-logic [5:0] [6:0] [$clog2(COMP_DATA_BITS)-1:0] comp_data_s_shift_2_3;
-logic [5:0] [6:0] [3:0]   [COMP_DATA_BITS-1:0] comp_data_s_2_3;
-logic [5:0] [6:0]                              comp_init_c_2_3;
-
-logic                                          comp_pipe_3_4;
-logic                                    [2:0] comp_loop_3_4;
-logic [5:0]                                    comp_data_m_mask_3_4;
-logic [5:0]           [COMP_DATA_IDX_BITS-1:0] comp_data_m_index_mux_3_4;
-logic [5:0] [6:0] [$clog2(COMP_DATA_BITS)-1:0] comp_data_n_shift_3_4;
-logic [5:0] [6:0]                              comp_done_c_3_4;
-logic [5:0] [6:0]         [COMP_DATA_BITS-1:0] comp_data_c_3_4;
-
-logic [5:0] [6:0]         [COMP_DATA_BITS-1:0] comp_data_n_4;
-
-logic                                          comp_init_d_4_5;
-logic [5:0]                                    comp_done_d_5;
-logic [5:0]               [COMP_DATA_BITS-1:0] comp_data_d_5;
+logic [5:0]                            comp_done_d_5;
+logic [5:0]       [COMP_DATA_BITS-1:0] comp_data_d_5;
+logic                                  comp_init_d_4_5;
 
 wire comp_data_zero = ~|comp_data_a_1;
 wire comp_data_done =  &comp_done_d_5 & ~comp_init_d_4_5;
@@ -98,6 +68,16 @@ wire comp_data_done =  &comp_done_d_5 & ~comp_init_d_4_5;
 assign comp_done_o = comp_done;
 
 // Stage: 1 / Output Register: 1 - 2
+logic                                        comp_pipe_1_2;
+logic                                  [2:0] comp_loop_1_2;
+logic                   [COMP_DATA_BITS-1:0] comp_data_m_1_2;
+logic [5:0]                                  comp_data_m_mask_1_2;
+logic               [COMP_DATA_IDX_BITS-1:0] comp_data_m_index_1_2;
+logic [5:0]         [COMP_DATA_IDX_BITS-1:0] comp_data_m_index_mux_1_2;
+logic                                        comp_done_p_1_2;
+logic [5:0] [6:0] [3:0] [COMP_DATA_BITS-1:0] comp_data_p_1_2;
+logic [5:0] [6:0]                            comp_init_s_1_2;
+
 ame_num_compare #(
     .COMP_DATA_BITS(64),
     .COMP_DATA_IDX_BITS(3)
@@ -176,8 +156,17 @@ begin
     end
 end
 
-
 // Stage: 2 / Output Register: 2 - 3
+logic                                          comp_pipe_2_3;
+logic                                    [2:0] comp_loop_2_3;
+logic             [$clog2(COMP_DATA_BITS)-1:0] comp_data_m_shift_2_3;
+logic [5:0]                                    comp_data_m_mask_2_3;
+logic                 [COMP_DATA_IDX_BITS-1:0] comp_data_m_index_2_3;
+logic [5:0]           [COMP_DATA_IDX_BITS-1:0] comp_data_m_index_mux_2_3;
+logic [5:0] [6:0] [$clog2(COMP_DATA_BITS)-1:0] comp_data_s_shift_2_3;
+logic [5:0] [6:0] [3:0]   [COMP_DATA_BITS-1:0] comp_data_s_2_3;
+logic [5:0] [6:0]                              comp_init_c_2_3;
+
 ame_num_approx #(
     .COMP_DATA_BITS(64)
 ) ame_num_approx (
@@ -245,6 +234,15 @@ begin
 end
 
 // Stage: 3 / Output Register: 3 - 4
+logic                                          comp_pipe_3_4;
+logic                                    [2:0] comp_loop_3_4;
+logic [5:0]                                    comp_data_m_mask_3_4;
+logic [5:0]           [COMP_DATA_IDX_BITS-1:0] comp_data_m_index_mux_3_4;
+logic [5:0] [6:0] [$clog2(COMP_DATA_BITS)-1:0] comp_data_n_shift_3_4;
+logic [5:0] [6:0]                              comp_done_c_3_4;
+logic [5:0] [6:0]         [COMP_DATA_BITS-1:0] comp_data_c_3_4;
+logic [5:0] [6:0]         [COMP_DATA_BITS-1:0] comp_data_n_4;
+
 generate
     for (genvar i = 0; i < 6; i++) begin
         for (genvar j = 0; j < 7; j++) begin
@@ -307,7 +305,7 @@ begin
     end
 end
 
-// Stage: 4 / Output Register: None
+// Stage: 4 / Output Register: 1 / 5
 generate
     for (genvar i = 0; i < 6; i++) begin
         for (genvar j = 0; j < 7; j++) begin
@@ -369,21 +367,182 @@ begin
     end
 end
 
+// FIFO: 1 => 5
+parameter FIFO_I_WIDTH = COMP_DATA_BITS * 6 * 2;
+parameter FIFO_I_DEPTH = 4;
+parameter FIFO_O_WIDTH = COMP_DATA_BITS * 6 * 2;
+parameter FIFO_O_DEPTH = 4;
+
+logic       comp_init_d_a;
+logic [5:0] comp_done_d_a;
+
+logic       comp_init_d_b;
+logic [5:0] comp_done_d_b;
+
+logic                          fifo_wr_en;
+logic       [FIFO_I_WIDTH-1:0] fifo_wr_data;
+logic                          fifo_wr_full;
+logic [$clog2(FIFO_I_DEPTH):0] fifo_wr_free;
+
+logic                          fifo_rd_en;
+logic       [FIFO_O_WIDTH-1:0] fifo_rd_data;
+logic                          fifo_rd_empty;
+logic [$clog2(FIFO_O_DEPTH):0] fifo_rd_avail;
+
+assign fifo_wr_en   = comp_init_d_4_5;
+assign fifo_wr_data = {
+    comp_data_t_0_1[comp_data_m_index_mux_0_1[5]][5], {comp_data_t_0_1[comp_data_m_index_mux_0_1[5]][6][COMP_DATA_BITS-COMP_DATA_FRAC_BITS-1:0], {COMP_DATA_FRAC_BITS{1'b0}}},
+    comp_data_t_0_1[comp_data_m_index_mux_0_1[4]][4], {comp_data_t_0_1[comp_data_m_index_mux_0_1[4]][6][COMP_DATA_BITS-COMP_DATA_FRAC_BITS-1:0], {COMP_DATA_FRAC_BITS{1'b0}}},
+    comp_data_t_0_1[comp_data_m_index_mux_0_1[3]][3], {comp_data_t_0_1[comp_data_m_index_mux_0_1[3]][6][COMP_DATA_BITS-COMP_DATA_FRAC_BITS-1:0], {COMP_DATA_FRAC_BITS{1'b0}}},
+    comp_data_t_0_1[comp_data_m_index_mux_0_1[2]][2], {comp_data_t_0_1[comp_data_m_index_mux_0_1[2]][6][COMP_DATA_BITS-COMP_DATA_FRAC_BITS-1:0], {COMP_DATA_FRAC_BITS{1'b0}}},
+    comp_data_t_0_1[comp_data_m_index_mux_0_1[1]][1], {comp_data_t_0_1[comp_data_m_index_mux_0_1[1]][6][COMP_DATA_BITS-COMP_DATA_FRAC_BITS-1:0], {COMP_DATA_FRAC_BITS{1'b0}}},
+    comp_data_t_0_1[comp_data_m_index_mux_0_1[0]][0], {comp_data_t_0_1[comp_data_m_index_mux_0_1[0]][6][COMP_DATA_BITS-COMP_DATA_FRAC_BITS-1:0], {COMP_DATA_FRAC_BITS{1'b0}}}
+};
+
+fifo #(
+    .I_WIDTH(FIFO_I_WIDTH),
+    .I_DEPTH(FIFO_I_DEPTH),
+    .O_WIDTH(FIFO_O_WIDTH),
+    .O_DEPTH(FIFO_O_DEPTH)
+) fifo (
+    .clk_i(clk_i),
+    .rst_n_i(rst_n_i),
+
+    .wr_en_i(fifo_wr_en),
+    .wr_data_i(fifo_wr_data),
+    .wr_full_o(fifo_wr_full),
+    .wr_free_o(fifo_wr_free),
+
+    .rd_en_i(fifo_rd_en),
+    .rd_data_o(fifo_rd_data),
+    .rd_empty_o(fifo_rd_empty),
+    .rd_avail_o(fifo_rd_avail)
+);
+
+always_ff @(posedge clk_i or negedge rst_n_i)
+begin
+    if (!rst_n_i) begin
+        ctl_sta <= IDLE;
+
+        comp_init_d_a <= 'b0;
+        comp_init_d_b <= 'b0;
+
+        fifo_rd_en <= 'b0;
+    end else begin
+        if (!fifo_rd_empty & (ctl_sta == IDLE)) begin
+            case ({&comp_done_d_b, &comp_done_d_a}) inside
+                2'b10: begin
+                    ctl_sta <= LOAD_B;
+
+                    fifo_rd_en <= (fifo_rd_avail >= 'd1) ? 'b1 : 'b0;
+                end
+                2'b?1: begin
+                    ctl_sta <= LOAD_A;
+
+                    fifo_rd_en <= (fifo_rd_avail >= 'd1) ? 'b1 : 'b0;
+                end
+                2'b00: begin
+                    ctl_sta <= IDLE;
+
+                    fifo_rd_en <= 'b0;
+                end
+            endcase
+        end
+
+        case (ctl_sta)
+            LOAD_B: begin
+                case ({comp_init_d_b, comp_init_d_a, fifo_rd_en})
+                    3'b101: begin
+                        ctl_sta <= LOAD_B;
+
+                        comp_init_d_a <= fifo_rd_en;
+                        comp_init_d_b <= 'b0;
+
+                        fifo_rd_en <= 'b0;
+                    end
+                    3'b001: begin
+                        fifo_rd_en <= 'b0;
+
+                        comp_init_d_a <= 'b0;
+                        comp_init_d_b <= fifo_rd_en;
+
+                        fifo_rd_en <= (fifo_rd_avail >= 'd1) ? 'b1 : 'b0;
+                    end
+                    default: begin
+                        ctl_sta <= IDLE;
+
+                        comp_init_d_a <= 'b0;
+                        comp_init_d_b <= 'b0;
+
+                        fifo_rd_en <= 'b0;
+                    end
+                endcase
+            end
+            LOAD_A: begin
+                case ({comp_init_d_b, comp_init_d_a, fifo_rd_en})
+                    3'b011: begin
+                        ctl_sta <= LOAD_A;
+
+                        comp_init_d_a <= 'b0;
+                        comp_init_d_b <= fifo_rd_en;
+
+                        fifo_rd_en <= 'b0;
+                    end
+                    3'b001: begin
+                        ctl_sta <= LOAD_A;
+
+                        comp_init_d_a <= fifo_rd_en;
+                        comp_init_d_b <= 'b0;
+
+                        fifo_rd_en <= (fifo_rd_avail >= 'd1) ? 'b1 : 'b0;
+                    end
+                    default: begin
+                        ctl_sta <= IDLE;
+
+                        comp_init_d_a <= 'b0;
+                        comp_init_d_b <= 'b0;
+
+                        fifo_rd_en <= 'b0;
+                    end
+                endcase
+            end
+        endcase
+    end
+end
+
 // Stage: 5 / Output Register: 5
+logic [5:0] [1:0] [COMP_DATA_BITS-1:0] comp_data_d_i;
+logic [5:0]       [COMP_DATA_BITS-1:0] comp_data_d_a;
+logic [5:0]       [COMP_DATA_BITS-1:0] comp_data_d_b;
+
 generate
     for (genvar i = 0; i < 6; i++) begin
+        assign comp_data_d_i[i] = fifo_rd_data[COMP_DATA_BITS * 2 * (i + 1) - 1 : COMP_DATA_BITS * 2 * i];
+
         ame_num_divide #(
-            .COMP_DATA_BITS(64)
-        ) ame_num_divide (
+            .COMP_DATA_BITS(COMP_DATA_BITS)
+        ) ame_num_divide_a (
             .clk_i(clk_i),
             .rst_n_i(rst_n_i),
 
-            .comp_init_i(comp_init_d_4_5),
-            .comp_done_o(comp_done_d_5[i]),
+            .comp_init_i(comp_init_d_a),
+            .comp_done_o(comp_done_d_a[i]),
 
-            .comp_data_i({comp_data_t_0_1[comp_data_m_index_mux_0_1[i]][i],
-                         {comp_data_t_0_1[comp_data_m_index_mux_0_1[i]][6][COMP_DATA_BITS-COMP_DATA_FRAC_BITS-1:0], {COMP_DATA_FRAC_BITS{1'b0}}}}),
-            .comp_data_o(comp_data_d_5[i])
+            .comp_data_i(comp_data_d_i[i]),
+            .comp_data_o(comp_data_d_a[i])
+        );
+
+        ame_num_divide #(
+            .COMP_DATA_BITS(COMP_DATA_BITS)
+        ) ame_num_divide_b (
+            .clk_i(clk_i),
+            .rst_n_i(rst_n_i),
+
+            .comp_init_i(comp_init_d_b),
+            .comp_done_o(comp_done_d_b[i]),
+
+            .comp_data_i(comp_data_d_i[i]),
+            .comp_data_o(comp_data_d_b[i])
         );
 
         assign comp_data_o[i] = comp_data_d_5[i];

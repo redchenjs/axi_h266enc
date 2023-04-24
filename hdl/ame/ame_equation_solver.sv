@@ -30,25 +30,19 @@ module ame_equation_solver #(
     // --- --- A52 A53 A54 A55 | B5     // A50 A51 A52 A53 A54 A55 | B5
     // --- --- --- --- --- --- | --     // --- --- --- --- --- --- | --
     input logic [5:0] [6:0] [COMP_DATA_BITS-1:0] comp_data_i,
+    input logic                            [7:0] comp_data_index_i,
 
     // 4 Fixed Point Results            // 6 Fixed Point Results
     // --- --- --- --- --- --- | --     // --- --- --- --- --- --- | --
     //  --  --  X2  X3  X4  X5 | --     //  X0  X1  X2  X3  X4  X5 | --
     // --- --- --- --- --- --- | --     // --- --- --- --- --- --- | --
-    output logic [5:0] [COMP_DATA_BITS-1:0] comp_data_o
+    output logic [5:0] [COMP_DATA_BITS-1:0] comp_data_o,
+    output logic                      [7:0] comp_data_index_o
 );
 
-typedef enum logic [1:0] {
-    IDLE   = 'd0,
-    LOAD_A = 'd1,
-    LOAD_B = 'd2
-} state_t;
-
-state_t ctl_sta;
-
-logic comp_done;
-
 // Stage 0 / 5 Registers
+logic                            [7:0] comp_data_index_0_1;
+
 logic                                  comp_pipe_0_1;
 logic                            [2:0] comp_loop_0_1;
 logic [5:0]                            comp_data_m_mask_0_1;
@@ -58,16 +52,11 @@ logic                                  comp_init_p_0_1;
 logic             [COMP_DATA_BITS-1:0] comp_data_a_1;
 logic         [COMP_DATA_IDX_BITS-1:0] comp_data_a_index_1;
 
-logic [5:0]                            comp_done_d_5;
-logic [5:0]       [COMP_DATA_BITS-1:0] comp_data_d_5;
 logic                                  comp_init_d_4_5;
 
-wire comp_data_zero = ~|comp_data_a_1;
-wire comp_data_done =  &comp_done_d_5 & ~comp_init_d_4_5;
-
-assign comp_done_o = comp_done;
-
 // Stage: 1 / Output Register: 1 - 2
+logic                                  [7:0] comp_data_index_1_2;
+
 logic                                        comp_pipe_1_2;
 logic                                  [2:0] comp_loop_1_2;
 logic                   [COMP_DATA_BITS-1:0] comp_data_m_1_2;
@@ -122,6 +111,8 @@ endgenerate
 always_ff @(posedge clk_i or negedge rst_n_i)
 begin
     if (!rst_n_i) begin
+        comp_data_index_1_2 <= 'b0;
+
         comp_pipe_1_2 <= 'b0;
         comp_loop_1_2 <= 'b0;
 
@@ -134,6 +125,8 @@ begin
         comp_data_m_index_1_2 <= 'b0;
         comp_data_m_index_mux_1_2 <= 'b0;
     end else begin
+        comp_data_index_1_2 <= comp_pipe_0_1 ? comp_data_index_0_1 : 'b0;
+
         comp_pipe_1_2 <= comp_pipe_0_1;
         comp_loop_1_2 <= comp_loop_0_1;
 
@@ -157,6 +150,8 @@ begin
 end
 
 // Stage: 2 / Output Register: 2 - 3
+logic                                    [7:0] comp_data_index_2_3;
+
 logic                                          comp_pipe_2_3;
 logic                                    [2:0] comp_loop_2_3;
 logic             [$clog2(COMP_DATA_BITS)-1:0] comp_data_m_shift_2_3;
@@ -204,6 +199,8 @@ endgenerate
 always_ff @(posedge clk_i or negedge rst_n_i)
 begin
     if (!rst_n_i) begin
+        comp_data_index_2_3 <= 'b0;
+
         comp_pipe_2_3 <= 'b0;
         comp_loop_2_3 <= 'b0;
 
@@ -213,6 +210,8 @@ begin
         comp_data_m_index_2_3 <= 'b0;
         comp_data_m_index_mux_2_3 <= 'b0;
     end else begin
+        comp_data_index_2_3 <= comp_data_index_1_2;
+
         comp_pipe_2_3 <= comp_pipe_1_2;
         comp_loop_2_3 <= comp_loop_1_2;
 
@@ -234,6 +233,8 @@ begin
 end
 
 // Stage: 3 / Output Register: 3 - 4
+logic                                    [7:0] comp_data_index_3_4;
+
 logic                                          comp_pipe_3_4;
 logic                                    [2:0] comp_loop_3_4;
 logic [5:0]                                    comp_data_m_mask_3_4;
@@ -269,12 +270,16 @@ endgenerate
 always_ff @(posedge clk_i or negedge rst_n_i)
 begin
     if (!rst_n_i) begin
+        comp_data_index_3_4 <= 'b0;
+
         comp_pipe_3_4 <= 'b0;
         comp_loop_3_4 <= 'b0;
 
         comp_data_m_mask_3_4 <= 'b0;
         comp_data_m_index_mux_3_4 <= 'b0;
     end else begin
+        comp_data_index_3_4 <= comp_data_index_2_3;
+
         comp_pipe_3_4 <= comp_pipe_2_3;
         comp_loop_3_4 <= comp_loop_2_3;
 
@@ -330,6 +335,8 @@ endgenerate
 always_ff @(posedge clk_i or negedge rst_n_i)
 begin
     if (!rst_n_i) begin
+        comp_data_index_0_1 <= 'b0;
+
         comp_pipe_0_1 <= 'b0;
         comp_loop_0_1 <= 'b0;
 
@@ -342,6 +349,8 @@ begin
         comp_init_d_4_5 <= 'b0;
     end else begin
         if (comp_init_i) begin
+            comp_data_index_0_1 <= comp_data_index_i;
+
             comp_pipe_0_1 <= 'b1;
             comp_loop_0_1 <= affine_param6_i ? 'd0 : 'd2;
 
@@ -353,6 +362,8 @@ begin
 
             comp_init_d_4_5 <= 'b0;
         end else begin
+            comp_data_index_0_1 <= comp_data_index_3_4;
+
             comp_pipe_0_1 <= (comp_loop_3_4 == 'd5) ? 'b0 : comp_pipe_3_4;
             comp_loop_0_1 <= (comp_loop_3_4 == 'd5) ? 'b0 : comp_loop_3_4 + comp_pipe_3_4;
 
@@ -367,30 +378,39 @@ begin
     end
 end
 
-// FIFO: 1 => 5
-parameter FIFO_I_WIDTH = COMP_DATA_BITS * 6 * 2;
-parameter FIFO_I_DEPTH = 4;
-parameter FIFO_O_WIDTH = COMP_DATA_BITS * 6 * 2;
-parameter FIFO_O_DEPTH = 4;
+// Division Input FIFO
+parameter FIFO_I_WIDTH_D_I = COMP_DATA_BITS * 6 * 2 + 8;
+parameter FIFO_I_DEPTH_D_I = 8;
+parameter FIFO_O_WIDTH_D_I = COMP_DATA_BITS * 6 * 2 + 8;
+parameter FIFO_O_DEPTH_D_I = 8;
 
-logic       comp_init_d_a;
-logic [5:0] comp_done_d_a;
+typedef enum logic [1:0] {
+    IDLE   = 'd0,
+    DATA_A = 'd1,
+    DATA_B = 'd2
+} state_t;
 
-logic       comp_init_d_b;
-logic [5:0] comp_done_d_b;
+state_t ctl_sta_d_i;
+state_t ctl_sta_d_o;
 
-logic                          fifo_wr_en;
-logic       [FIFO_I_WIDTH-1:0] fifo_wr_data;
-logic                          fifo_wr_full;
-logic [$clog2(FIFO_I_DEPTH):0] fifo_wr_free;
+logic [1:0]       comp_init_d;
+logic [1:0] [5:0] comp_done_d;
 
-logic                          fifo_rd_en;
-logic       [FIFO_O_WIDTH-1:0] fifo_rd_data;
-logic                          fifo_rd_empty;
-logic [$clog2(FIFO_O_DEPTH):0] fifo_rd_avail;
+logic [1:0] [7:0] comp_data_index_d_i;
 
-assign fifo_wr_en   = comp_init_d_4_5;
-assign fifo_wr_data = {
+logic                              fifo_wr_en_d_i;
+logic       [FIFO_I_WIDTH_D_I-1:0] fifo_wr_data_d_i;
+logic                              fifo_wr_full_d_i;
+logic [$clog2(FIFO_I_DEPTH_D_I):0] fifo_wr_free_d_i;
+
+logic                              fifo_rd_en_d_i;
+logic       [FIFO_O_WIDTH_D_I-1:0] fifo_rd_data_d_i;
+logic                              fifo_rd_empty_d_i;
+logic [$clog2(FIFO_O_DEPTH_D_I):0] fifo_rd_avail_d_i;
+
+assign fifo_wr_en_d_i   = comp_init_d_4_5;
+assign fifo_wr_data_d_i = {
+    comp_data_index_0_1,
     comp_data_t_0_1[comp_data_m_index_mux_0_1[5]][5], {comp_data_t_0_1[comp_data_m_index_mux_0_1[5]][6][COMP_DATA_BITS-COMP_DATA_FRAC_BITS-1:0], {COMP_DATA_FRAC_BITS{1'b0}}},
     comp_data_t_0_1[comp_data_m_index_mux_0_1[4]][4], {comp_data_t_0_1[comp_data_m_index_mux_0_1[4]][6][COMP_DATA_BITS-COMP_DATA_FRAC_BITS-1:0], {COMP_DATA_FRAC_BITS{1'b0}}},
     comp_data_t_0_1[comp_data_m_index_mux_0_1[3]][3], {comp_data_t_0_1[comp_data_m_index_mux_0_1[3]][6][COMP_DATA_BITS-COMP_DATA_FRAC_BITS-1:0], {COMP_DATA_FRAC_BITS{1'b0}}},
@@ -400,153 +420,232 @@ assign fifo_wr_data = {
 };
 
 fifo #(
-    .I_WIDTH(FIFO_I_WIDTH),
-    .I_DEPTH(FIFO_I_DEPTH),
-    .O_WIDTH(FIFO_O_WIDTH),
-    .O_DEPTH(FIFO_O_DEPTH)
-) fifo (
+    .I_WIDTH(FIFO_I_WIDTH_D_I),
+    .I_DEPTH(FIFO_I_DEPTH_D_I),
+    .O_WIDTH(FIFO_O_WIDTH_D_I),
+    .O_DEPTH(FIFO_O_DEPTH_D_I)
+) fifo_d_i (
     .clk_i(clk_i),
     .rst_n_i(rst_n_i),
 
-    .wr_en_i(fifo_wr_en),
-    .wr_data_i(fifo_wr_data),
-    .wr_full_o(fifo_wr_full),
-    .wr_free_o(fifo_wr_free),
+    .wr_en_i(fifo_wr_en_d_i),
+    .wr_data_i(fifo_wr_data_d_i),
+    .wr_full_o(fifo_wr_full_d_i),
+    .wr_free_o(fifo_wr_free_d_i),
 
-    .rd_en_i(fifo_rd_en),
-    .rd_data_o(fifo_rd_data),
-    .rd_empty_o(fifo_rd_empty),
-    .rd_avail_o(fifo_rd_avail)
+    .rd_en_i(fifo_rd_en_d_i),
+    .rd_data_o(fifo_rd_data_d_i),
+    .rd_empty_o(fifo_rd_empty_d_i),
+    .rd_avail_o(fifo_rd_avail_d_i)
 );
 
 always_ff @(posedge clk_i or negedge rst_n_i)
 begin
     if (!rst_n_i) begin
-        ctl_sta <= IDLE;
+        ctl_sta_d_i <= IDLE;
 
-        comp_init_d_a <= 'b0;
-        comp_init_d_b <= 'b0;
+        comp_init_d <= 'b0;
 
-        fifo_rd_en <= 'b0;
+        fifo_rd_en_d_i <= 'b0;
+
+        comp_data_index_d_i <= 'b0;
     end else begin
-        if (!fifo_rd_empty & (ctl_sta == IDLE)) begin
-            case ({&comp_done_d_b, &comp_done_d_a}) inside
+        if (!fifo_rd_empty_d_i & (ctl_sta_d_i == IDLE)) begin
+            case ({&comp_done_d[1], &comp_done_d[0]}) inside
                 2'b10: begin
-                    ctl_sta <= LOAD_B;
+                    ctl_sta_d_i <= DATA_B;
 
-                    fifo_rd_en <= (fifo_rd_avail >= 'd1) ? 'b1 : 'b0;
+                    fifo_rd_en_d_i <= (fifo_rd_avail_d_i >= 'd1) ? 'b1 : 'b0;
                 end
                 2'b?1: begin
-                    ctl_sta <= LOAD_A;
+                    ctl_sta_d_i <= DATA_A;
 
-                    fifo_rd_en <= (fifo_rd_avail >= 'd1) ? 'b1 : 'b0;
+                    fifo_rd_en_d_i <= (fifo_rd_avail_d_i >= 'd1) ? 'b1 : 'b0;
                 end
                 2'b00: begin
-                    ctl_sta <= IDLE;
+                    ctl_sta_d_i <= IDLE;
 
-                    fifo_rd_en <= 'b0;
+                    fifo_rd_en_d_i <= 'b0;
                 end
             endcase
         end
 
-        case (ctl_sta)
-            LOAD_B: begin
-                case ({comp_init_d_b, comp_init_d_a, fifo_rd_en})
-                    3'b101: begin
-                        ctl_sta <= LOAD_B;
-
-                        comp_init_d_a <= fifo_rd_en;
-                        comp_init_d_b <= 'b0;
-
-                        fifo_rd_en <= 'b0;
-                    end
+        case (ctl_sta_d_i)
+            DATA_B: begin
+                case ({comp_init_d, fifo_rd_en_d_i})
                     3'b001: begin
-                        fifo_rd_en <= 'b0;
+                        ctl_sta_d_i <= DATA_B;
 
-                        comp_init_d_a <= 'b0;
-                        comp_init_d_b <= fifo_rd_en;
+                        comp_init_d[1] <= fifo_rd_en_d_i;
+                        comp_init_d[0] <= 'b0;
 
-                        fifo_rd_en <= (fifo_rd_avail >= 'd1) ? 'b1 : 'b0;
+                        fifo_rd_en_d_i <= 'b0;
                     end
                     default: begin
-                        ctl_sta <= IDLE;
+                        ctl_sta_d_i <= IDLE;
 
-                        comp_init_d_a <= 'b0;
-                        comp_init_d_b <= 'b0;
+                        comp_init_d[1] <= 'b0;
+                        comp_init_d[0] <= 'b0;
 
-                        fifo_rd_en <= 'b0;
+                        fifo_rd_en_d_i <= 'b0;
                     end
                 endcase
             end
-            LOAD_A: begin
-                case ({comp_init_d_b, comp_init_d_a, fifo_rd_en})
-                    3'b011: begin
-                        ctl_sta <= LOAD_A;
-
-                        comp_init_d_a <= 'b0;
-                        comp_init_d_b <= fifo_rd_en;
-
-                        fifo_rd_en <= 'b0;
-                    end
+            DATA_A: begin
+                case ({comp_init_d, fifo_rd_en_d_i})
                     3'b001: begin
-                        ctl_sta <= LOAD_A;
+                        ctl_sta_d_i <= DATA_A;
 
-                        comp_init_d_a <= fifo_rd_en;
-                        comp_init_d_b <= 'b0;
+                        comp_init_d[1] <= 'b0;
+                        comp_init_d[0] <= fifo_rd_en_d_i;
 
-                        fifo_rd_en <= (fifo_rd_avail >= 'd1) ? 'b1 : 'b0;
+                        fifo_rd_en_d_i <= 'b0;
                     end
                     default: begin
-                        ctl_sta <= IDLE;
+                        ctl_sta_d_i <= IDLE;
 
-                        comp_init_d_a <= 'b0;
-                        comp_init_d_b <= 'b0;
+                        comp_init_d[1] <= 'b0;
+                        comp_init_d[0] <= 'b0;
 
-                        fifo_rd_en <= 'b0;
+                        fifo_rd_en_d_i <= 'b0;
                     end
                 endcase
             end
         endcase
+
+        for (int k = 0; k < 2; k++) begin
+            if (comp_init_d[k]) begin
+                comp_data_index_d_i[k] <= fifo_rd_data_d_i[FIFO_O_WIDTH_D_I - 1 : FIFO_O_WIDTH_D_I - 8];
+            end
+        end
     end
 end
 
-// Stage: 5 / Output Register: 5
+// Stage: 5 / Division
 logic [5:0] [1:0] [COMP_DATA_BITS-1:0] comp_data_d_i;
-logic [5:0]       [COMP_DATA_BITS-1:0] comp_data_d_a;
-logic [5:0]       [COMP_DATA_BITS-1:0] comp_data_d_b;
+logic [1:0] [5:0] [COMP_DATA_BITS-1:0] comp_data_d_t;
+logic [1:0] [5:0] [COMP_DATA_BITS-1:0] comp_data_d_o;
 
 generate
-    for (genvar i = 0; i < 6; i++) begin
-        assign comp_data_d_i[i] = fifo_rd_data[COMP_DATA_BITS * 2 * (i + 1) - 1 : COMP_DATA_BITS * 2 * i];
+    for (genvar k = 0; k < 2; k++) begin
+        for (genvar i = 0; i < 6; i++) begin
+            assign comp_data_d_i[i] = fifo_rd_data_d_i[COMP_DATA_BITS * 2 * (i + 1) - 1 : COMP_DATA_BITS * 2 * i];
 
-        ame_num_divide #(
-            .COMP_DATA_BITS(COMP_DATA_BITS)
-        ) ame_num_divide_a (
-            .clk_i(clk_i),
-            .rst_n_i(rst_n_i),
+            ame_num_divide #(
+                .COMP_DATA_BITS(COMP_DATA_BITS)
+            ) ame_num_divide (
+                .clk_i(clk_i),
+                .rst_n_i(rst_n_i),
 
-            .comp_init_i(comp_init_d_a),
-            .comp_done_o(comp_done_d_a[i]),
+                .comp_init_i(comp_init_d[k]),
+                .comp_done_o(comp_done_d[k][i]),
 
-            .comp_data_i(comp_data_d_i[i]),
-            .comp_data_o(comp_data_d_a[i])
-        );
-
-        ame_num_divide #(
-            .COMP_DATA_BITS(COMP_DATA_BITS)
-        ) ame_num_divide_b (
-            .clk_i(clk_i),
-            .rst_n_i(rst_n_i),
-
-            .comp_init_i(comp_init_d_b),
-            .comp_done_o(comp_done_d_b[i]),
-
-            .comp_data_i(comp_data_d_i[i]),
-            .comp_data_o(comp_data_d_b[i])
-        );
-
-        assign comp_data_o[i] = comp_data_d_5[i];
+                .comp_data_i(comp_data_d_i[i]),
+                .comp_data_o(comp_data_d_t[k][i])
+            );
+        end
     end
 endgenerate
+
+// Division Output FIFO
+parameter FIFO_I_WIDTH_D_O = COMP_DATA_BITS * 6 + 8;
+parameter FIFO_I_DEPTH_D_O = 8;
+parameter FIFO_O_WIDTH_D_O = COMP_DATA_BITS * 6 + 8;
+parameter FIFO_O_DEPTH_D_O = 8;
+
+logic [1:0]       comp_done_t;
+logic [1:0] [7:0] comp_data_index_d_o;
+
+logic [1:0]                              fifo_wr_en_d_c;
+logic [1:0]                              fifo_wr_en_d_o;
+logic [1:0]       [FIFO_I_WIDTH_D_O-1:0] fifo_wr_data_d_o;
+logic [1:0]                              fifo_wr_full_d_o;
+logic [1:0] [$clog2(FIFO_I_DEPTH_D_O):0] fifo_wr_free_d_o;
+
+logic [1:0]                              fifo_rd_en_d_o;
+logic [1:0]       [FIFO_O_WIDTH_D_O-1:0] fifo_rd_data_d_o;
+logic [1:0]                              fifo_rd_empty_d_o;
+logic [1:0] [$clog2(FIFO_O_DEPTH_D_O):0] fifo_rd_avail_d_o;
+
+generate
+    for (genvar k = 0; k < 2; k++) begin
+        assign fifo_wr_data_d_o[k] = {
+            comp_data_index_d_i[k],
+            comp_data_d_t[k][5], comp_data_d_t[k][4],
+            comp_data_d_t[k][3], comp_data_d_t[k][2],
+            comp_data_d_t[k][1], comp_data_d_t[k][0]
+        };
+
+        fifo #(
+            .I_WIDTH(FIFO_I_WIDTH_D_O),
+            .I_DEPTH(FIFO_I_DEPTH_D_O),
+            .O_WIDTH(FIFO_O_WIDTH_D_O),
+            .O_DEPTH(FIFO_O_DEPTH_D_O)
+        ) fifo_d_o (
+            .clk_i(clk_i),
+            .rst_n_i(rst_n_i),
+
+            .wr_en_i(fifo_wr_en_d_o[k]),
+            .wr_data_i(fifo_wr_data_d_o[k]),
+            .wr_full_o(fifo_wr_full_d_o[k]),
+            .wr_free_o(fifo_wr_free_d_o[k]),
+
+            .rd_en_i(fifo_rd_en_d_o[k]),
+            .rd_data_o(fifo_rd_data_d_o[k]),
+            .rd_empty_o(fifo_rd_empty_d_o[k]),
+            .rd_avail_o(fifo_rd_avail_d_o[k])
+        );
+
+        for (genvar i = 0; i < 6; i++) begin
+            assign comp_data_d_o[k][i] = fifo_rd_data_d_o[k][COMP_DATA_BITS * (i + 1) - 1 : COMP_DATA_BITS * i];
+        end
+
+        assign comp_data_index_d_o[k] = fifo_rd_data_d_o[k][FIFO_O_WIDTH_D_O - 1 : FIFO_O_WIDTH_D_O - 8];
+    end
+endgenerate
+
+always_ff @(posedge clk_i or negedge rst_n_i)
+begin
+    if (!rst_n_i) begin
+        ctl_sta_d_o <= IDLE;
+
+        comp_done_o <= 'b0;
+
+        comp_data_o <= 'b0;
+        comp_done_t <= 'b0;
+        comp_data_index_o <= 'b0;
+
+        fifo_wr_en_d_c <= 'b0;
+        fifo_wr_en_d_o <= 'b0;
+
+        fifo_rd_en_d_o <= 'b0;
+    end else begin
+        for (int k = 0; k < 2; k++) begin
+            fifo_wr_en_d_c[k] <= ~(|comp_done_d[k]) ? 'b1 : fifo_wr_en_d_o[k] ? 'b0 : fifo_wr_en_d_c[k];
+            fifo_wr_en_d_o[k] <= ~fifo_wr_en_d_o[k] & fifo_wr_en_d_c[k] & &comp_done_d[k];
+        end
+
+        comp_done_t <= fifo_rd_en_d_o;
+        comp_done_o <= |comp_done_t;
+
+        for (int i = 0; i < 6; i++) begin
+            comp_data_o[i] <= comp_done_t[1] ? comp_data_d_o[1][i] : comp_data_d_o[0][i];
+        end
+
+        comp_data_index_o <= comp_done_t[1] ? comp_data_index_d_o[1] : comp_data_index_d_o[0];
+
+        if (!fifo_rd_empty_d_o[0]) begin
+            fifo_rd_en_d_o[1] <= 'b0;
+            fifo_rd_en_d_o[0] <= !fifo_rd_en_d_o[0];
+        end else begin
+            if (!fifo_rd_empty_d_o[1]) begin
+                fifo_rd_en_d_o[1] <= !fifo_rd_en_d_o[1];
+                fifo_rd_en_d_o[0] <= 'b0;
+            end else begin
+                fifo_rd_en_d_o <= 'b0;
+            end
+        end
+    end
+end
 
 endmodule

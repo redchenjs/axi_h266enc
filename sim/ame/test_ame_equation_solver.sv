@@ -30,12 +30,14 @@ logic affine_param6_i;
 // --- --- A52 A53 A54 A55 | B5     // A50 A51 A52 A53 A54 A55 | B5
 // --- --- --- --- --- --- | --     // --- --- --- --- --- --- | --
 logic [5:0] [6:0] [COMP_DATA_BITS-1:0] comp_data_i;
+logic                            [7:0] comp_data_index_i;
 
 // 4 Fixed Point Results            // 6 Fixed Point Results
 // --- --- --- --- --- --- | --     // --- --- --- --- --- --- | --
 //  --  --  X2  X3  X4  X5 | --     //  X0  X1  X2  X3  X4  X5 | --
 // --- --- --- --- --- --- | --     // --- --- --- --- --- --- | --
 logic [5:0] [COMP_DATA_BITS-1:0] comp_data_o;
+logic                      [7:0] comp_data_index_o;
 
 ame_equation_solver #(
     .COMP_DATA_BITS(COMP_DATA_BITS),
@@ -50,7 +52,10 @@ ame_equation_solver #(
     .affine_param6_i(affine_param6_i),
 
     .comp_data_i(comp_data_i),
-    .comp_data_o(comp_data_o)
+    .comp_data_index_i(comp_data_index_i),
+
+    .comp_data_o(comp_data_o),
+    .comp_data_index_o(comp_data_index_o)
 );
 
 initial begin
@@ -61,7 +66,9 @@ initial begin
     rst_n_i = 1'b0;
 
     comp_init_i = 'b0;
+
     comp_data_i = 'b0;
+    comp_data_index_i = 'b0;
 
     affine_param6_i = 'b0;
 
@@ -89,6 +96,16 @@ always begin
     };
 
     #5 comp_init_i = 1'b1;
+       comp_data_index_i = 'd1;
+    #5 comp_data_index_i = 'd2;
+       comp_data_i[5][6] = 1'b0;
+       affine_param6_i = 'b1;
+    #5 comp_data_index_i = 'd3;
+       comp_data_i[4][6] = 1'b0;
+       affine_param6_i = 'b1;
+    #5 comp_data_index_i = 'd4;
+       comp_data_i[3][6] = 1'b0;
+       affine_param6_i = 'b1;
     #5 comp_init_i = 1'b0;
 
     #1000 comp_init_i = 1'b0;

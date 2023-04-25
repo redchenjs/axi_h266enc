@@ -16,6 +16,7 @@ module ame_equation_solver #(
     input logic rst_n_i,
 
     input  logic comp_init_i,
+    output logic comp_load_o,
     output logic comp_done_o,
 
     input logic affine_param6_i,
@@ -54,6 +55,8 @@ logic         [COMP_DATA_IDX_BITS-1:0] comp_data_a_index_1;
 
 logic                                  comp_init_d_4_5;
 
+assign comp_load_o = ~comp_pipe_2_3;
+
 // Stage: 1 / Output Register: 1 - 2
 logic                                  [7:0] comp_data_index_1_2;
 
@@ -77,12 +80,14 @@ ame_num_compare #(
     .comp_init_i(comp_init_p_0_1),
     .comp_done_o(),
 
-    .comp_data_i({ comp_data_t_0_1[5][comp_loop_0_1],
-                   comp_data_t_0_1[4][comp_loop_0_1],
-                   comp_data_t_0_1[3][comp_loop_0_1],
-                   comp_data_t_0_1[2][comp_loop_0_1],
-                   comp_data_t_0_1[1][comp_loop_0_1],
-                   comp_data_t_0_1[0][comp_loop_0_1] }),
+    .comp_data_i({
+        comp_data_t_0_1[5][comp_loop_0_1],
+        comp_data_t_0_1[4][comp_loop_0_1],
+        comp_data_t_0_1[3][comp_loop_0_1],
+        comp_data_t_0_1[2][comp_loop_0_1],
+        comp_data_t_0_1[1][comp_loop_0_1],
+        comp_data_t_0_1[0][comp_loop_0_1]
+    }),
     .comp_data_o(comp_data_a_1),
 
     .comp_data_mask_i(comp_data_m_mask_0_1),

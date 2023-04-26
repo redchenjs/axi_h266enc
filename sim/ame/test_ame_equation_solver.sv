@@ -75,7 +75,7 @@ always begin
 end
 
 always begin
-    #10000 rst_n_i = 1'b0;
+    #5000 rst_n_i = 1'b0;
     #25 $finish;
 end
 

@@ -12,19 +12,17 @@
    </db_ref_list>
    <zoom_setting>
       <ZoomStartTime time="0.000 ns"></ZoomStartTime>
-      <ZoomEndTime time="281.635 ns"></ZoomEndTime>
-      <Cursor1Time time="1,000.000 ns"></Cursor1Time>
+      <ZoomEndTime time="750.501 ns"></ZoomEndTime>
+      <Cursor1Time time="70.000 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="268"></NameColumnWidth>
-      <ValueColumnWidth column_width="111"></ValueColumnWidth>
+      <ValueColumnWidth column_width="107"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="87" />
+   <WVObjectSize size="70" />
    <wave_markers>
+      <marker time="4967500" label="" />
       <marker time="182500" label="" />
-      <marker time="237500" label="" />
-      <marker time="12500" label="" />
-      <marker time="969010" label="" />
    </wave_markers>
    <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/clk_i" type="logic">
       <obj_property name="ElementShortName">clk_i</obj_property>
@@ -55,48 +53,82 @@
       <obj_property name="ObjectShortName">comp_data_i[5:0][6:0][63:0]</obj_property>
       <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
       <obj_property name="isExpanded"></obj_property>
+      <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_i[5]" type="array">
+         <obj_property name="ElementShortName">[5][6:0][63:0]</obj_property>
+         <obj_property name="ObjectShortName">[5][6:0][63:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_i[4]" type="array">
+         <obj_property name="ElementShortName">[4][6:0][63:0]</obj_property>
+         <obj_property name="ObjectShortName">[4][6:0][63:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_i[3]" type="array">
+         <obj_property name="ElementShortName">[3][6:0][63:0]</obj_property>
+         <obj_property name="ObjectShortName">[3][6:0][63:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_i[2]" type="array">
+         <obj_property name="ElementShortName">[2][6:0][63:0]</obj_property>
+         <obj_property name="ObjectShortName">[2][6:0][63:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_i[1]" type="array">
+         <obj_property name="ElementShortName">[1][6:0][63:0]</obj_property>
+         <obj_property name="ObjectShortName">[1][6:0][63:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_i[0]" type="array">
+         <obj_property name="ElementShortName">[0][6:0][63:0]</obj_property>
+         <obj_property name="ObjectShortName">[0][6:0][63:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
    </wvobject>
    <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_index_i" type="array">
       <obj_property name="ElementShortName">comp_data_index_i[7:0]</obj_property>
       <obj_property name="ObjectShortName">comp_data_index_i[7:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
    </wvobject>
    <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_o" type="array">
       <obj_property name="ElementShortName">comp_data_o[5:0][63:0]</obj_property>
       <obj_property name="ObjectShortName">comp_data_o[5:0][63:0]</obj_property>
       <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
       <obj_property name="isExpanded"></obj_property>
+      <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_o[5]" type="array">
+         <obj_property name="ElementShortName">[5][63:0]</obj_property>
+         <obj_property name="ObjectShortName">[5][63:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_o[4]" type="array">
+         <obj_property name="ElementShortName">[4][63:0]</obj_property>
+         <obj_property name="ObjectShortName">[4][63:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_o[3]" type="array">
+         <obj_property name="ElementShortName">[3][63:0]</obj_property>
+         <obj_property name="ObjectShortName">[3][63:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_o[2]" type="array">
+         <obj_property name="ElementShortName">[2][63:0]</obj_property>
+         <obj_property name="ObjectShortName">[2][63:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_o[1]" type="array">
+         <obj_property name="ElementShortName">[1][63:0]</obj_property>
+         <obj_property name="ObjectShortName">[1][63:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_o[0]" type="array">
+         <obj_property name="ElementShortName">[0][63:0]</obj_property>
+         <obj_property name="ObjectShortName">[0][63:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
    </wvobject>
    <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_index_o" type="array">
       <obj_property name="ElementShortName">comp_data_index_o[7:0]</obj_property>
       <obj_property name="ObjectShortName">comp_data_index_o[7:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_index_0_1" type="array">
-      <obj_property name="ElementShortName">comp_data_index_0_1[7:0]</obj_property>
-      <obj_property name="ObjectShortName">comp_data_index_0_1[7:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_pipe_0_1" type="logic">
-      <obj_property name="ElementShortName">comp_pipe_0_1</obj_property>
-      <obj_property name="ObjectShortName">comp_pipe_0_1</obj_property>
-   </wvobject>
-   <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_loop_0_1" type="array">
-      <obj_property name="ElementShortName">comp_loop_0_1[2:0]</obj_property>
-      <obj_property name="ObjectShortName">comp_loop_0_1[2:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_m_mask_0_1" type="array">
-      <obj_property name="ElementShortName">comp_data_m_mask_0_1[5:0]</obj_property>
-      <obj_property name="ObjectShortName">comp_data_m_mask_0_1[5:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_m_index_mux_0_1" type="array">
-      <obj_property name="ElementShortName">comp_data_m_index_mux_0_1[5:0][2:0]</obj_property>
-      <obj_property name="ObjectShortName">comp_data_m_index_mux_0_1[5:0][2:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_t_0_1" type="array">
-      <obj_property name="ElementShortName">comp_data_t_0_1[5:0][6:0][63:0]</obj_property>
-      <obj_property name="ObjectShortName">comp_data_t_0_1[5:0][6:0][63:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_init_p_0_1" type="logic">
-      <obj_property name="ElementShortName">comp_init_p_0_1</obj_property>
-      <obj_property name="ObjectShortName">comp_init_p_0_1</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
    </wvobject>
    <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_a_1" type="array">
       <obj_property name="ElementShortName">comp_data_a_1[63:0]</obj_property>
@@ -226,14 +258,6 @@
       <obj_property name="ElementShortName">comp_data_n_4[5:0][6:0][63:0]</obj_property>
       <obj_property name="ObjectShortName">comp_data_n_4[5:0][6:0][63:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/ctl_sta_d_i" type="array">
-      <obj_property name="ElementShortName">ctl_sta_d_i[1:0]</obj_property>
-      <obj_property name="ObjectShortName">ctl_sta_d_i[1:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/ctl_sta_d_o" type="array">
-      <obj_property name="ElementShortName">ctl_sta_d_o[1:0]</obj_property>
-      <obj_property name="ObjectShortName">ctl_sta_d_o[1:0]</obj_property>
-   </wvobject>
    <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_init_d" type="array">
       <obj_property name="ElementShortName">comp_init_d[1:0]</obj_property>
       <obj_property name="ObjectShortName">comp_init_d[1:0]</obj_property>
@@ -244,6 +268,78 @@
       <obj_property name="ObjectShortName">comp_data_d_t[1:0][5:0][63:0]</obj_property>
       <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
       <obj_property name="isExpanded"></obj_property>
+      <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_d_t[1]" type="array">
+         <obj_property name="ElementShortName">[1][5:0][63:0]</obj_property>
+         <obj_property name="ObjectShortName">[1][5:0][63:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="isExpanded"></obj_property>
+         <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_d_t[1][5]" type="array">
+            <obj_property name="ElementShortName">[5][63:0]</obj_property>
+            <obj_property name="ObjectShortName">[5][63:0]</obj_property>
+            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         </wvobject>
+         <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_d_t[1][4]" type="array">
+            <obj_property name="ElementShortName">[4][63:0]</obj_property>
+            <obj_property name="ObjectShortName">[4][63:0]</obj_property>
+            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         </wvobject>
+         <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_d_t[1][3]" type="array">
+            <obj_property name="ElementShortName">[3][63:0]</obj_property>
+            <obj_property name="ObjectShortName">[3][63:0]</obj_property>
+            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         </wvobject>
+         <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_d_t[1][2]" type="array">
+            <obj_property name="ElementShortName">[2][63:0]</obj_property>
+            <obj_property name="ObjectShortName">[2][63:0]</obj_property>
+            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         </wvobject>
+         <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_d_t[1][1]" type="array">
+            <obj_property name="ElementShortName">[1][63:0]</obj_property>
+            <obj_property name="ObjectShortName">[1][63:0]</obj_property>
+            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         </wvobject>
+         <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_d_t[1][0]" type="array">
+            <obj_property name="ElementShortName">[0][63:0]</obj_property>
+            <obj_property name="ObjectShortName">[0][63:0]</obj_property>
+            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_d_t[0]" type="array">
+         <obj_property name="ElementShortName">[0][5:0][63:0]</obj_property>
+         <obj_property name="ObjectShortName">[0][5:0][63:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="isExpanded"></obj_property>
+         <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_d_t[0][5]" type="array">
+            <obj_property name="ElementShortName">[5][63:0]</obj_property>
+            <obj_property name="ObjectShortName">[5][63:0]</obj_property>
+            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         </wvobject>
+         <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_d_t[0][4]" type="array">
+            <obj_property name="ElementShortName">[4][63:0]</obj_property>
+            <obj_property name="ObjectShortName">[4][63:0]</obj_property>
+            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         </wvobject>
+         <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_d_t[0][3]" type="array">
+            <obj_property name="ElementShortName">[3][63:0]</obj_property>
+            <obj_property name="ObjectShortName">[3][63:0]</obj_property>
+            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         </wvobject>
+         <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_d_t[0][2]" type="array">
+            <obj_property name="ElementShortName">[2][63:0]</obj_property>
+            <obj_property name="ObjectShortName">[2][63:0]</obj_property>
+            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         </wvobject>
+         <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_d_t[0][1]" type="array">
+            <obj_property name="ElementShortName">[1][63:0]</obj_property>
+            <obj_property name="ObjectShortName">[1][63:0]</obj_property>
+            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         </wvobject>
+         <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_d_t[0][0]" type="array">
+            <obj_property name="ElementShortName">[0][63:0]</obj_property>
+            <obj_property name="ObjectShortName">[0][63:0]</obj_property>
+            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         </wvobject>
+      </wvobject>
    </wvobject>
    <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_done_d" type="array">
       <obj_property name="ElementShortName">comp_done_d[1:0][5:0]</obj_property>
@@ -253,6 +349,18 @@
    <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_index_d_i" type="array">
       <obj_property name="ElementShortName">comp_data_index_d_i[1:0][7:0]</obj_property>
       <obj_property name="ObjectShortName">comp_data_index_d_i[1:0][7:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_index_d_i[1]" type="array">
+         <obj_property name="ElementShortName">[1][7:0]</obj_property>
+         <obj_property name="ObjectShortName">[1][7:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_index_d_i[0]" type="array">
+         <obj_property name="ElementShortName">[0][7:0]</obj_property>
+         <obj_property name="ObjectShortName">[0][7:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
    </wvobject>
    <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/fifo_wr_en_d_i" type="logic">
       <obj_property name="ElementShortName">fifo_wr_en_d_i</obj_property>
@@ -277,6 +385,7 @@
    <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/fifo_rd_data_d_i" type="array">
       <obj_property name="ElementShortName">fifo_rd_data_d_i[775:0]</obj_property>
       <obj_property name="ObjectShortName">fifo_rd_data_d_i[775:0]</obj_property>
+      <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
    </wvobject>
    <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/fifo_rd_empty_d_i" type="logic">
       <obj_property name="ElementShortName">fifo_rd_empty_d_i</obj_property>
@@ -289,12 +398,182 @@
    <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_d_i" type="array">
       <obj_property name="ElementShortName">comp_data_d_i[5:0][1:0][63:0]</obj_property>
       <obj_property name="ObjectShortName">comp_data_d_i[5:0][1:0][63:0]</obj_property>
+      <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_d_i[5]" type="array">
+         <obj_property name="ElementShortName">[5][1:0][63:0]</obj_property>
+         <obj_property name="ObjectShortName">[5][1:0][63:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="isExpanded"></obj_property>
+         <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_d_i[5][1]" type="array">
+            <obj_property name="ElementShortName">[1][63:0]</obj_property>
+            <obj_property name="ObjectShortName">[1][63:0]</obj_property>
+            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         </wvobject>
+         <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_d_i[5][0]" type="array">
+            <obj_property name="ElementShortName">[0][63:0]</obj_property>
+            <obj_property name="ObjectShortName">[0][63:0]</obj_property>
+            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_d_i[4]" type="array">
+         <obj_property name="ElementShortName">[4][1:0][63:0]</obj_property>
+         <obj_property name="ObjectShortName">[4][1:0][63:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="isExpanded"></obj_property>
+         <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_d_i[4][1]" type="array">
+            <obj_property name="ElementShortName">[1][63:0]</obj_property>
+            <obj_property name="ObjectShortName">[1][63:0]</obj_property>
+            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         </wvobject>
+         <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_d_i[4][0]" type="array">
+            <obj_property name="ElementShortName">[0][63:0]</obj_property>
+            <obj_property name="ObjectShortName">[0][63:0]</obj_property>
+            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_d_i[3]" type="array">
+         <obj_property name="ElementShortName">[3][1:0][63:0]</obj_property>
+         <obj_property name="ObjectShortName">[3][1:0][63:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="isExpanded"></obj_property>
+         <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_d_i[3][1]" type="array">
+            <obj_property name="ElementShortName">[1][63:0]</obj_property>
+            <obj_property name="ObjectShortName">[1][63:0]</obj_property>
+            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         </wvobject>
+         <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_d_i[3][0]" type="array">
+            <obj_property name="ElementShortName">[0][63:0]</obj_property>
+            <obj_property name="ObjectShortName">[0][63:0]</obj_property>
+            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_d_i[2]" type="array">
+         <obj_property name="ElementShortName">[2][1:0][63:0]</obj_property>
+         <obj_property name="ObjectShortName">[2][1:0][63:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="isExpanded"></obj_property>
+         <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_d_i[2][1]" type="array">
+            <obj_property name="ElementShortName">[1][63:0]</obj_property>
+            <obj_property name="ObjectShortName">[1][63:0]</obj_property>
+            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         </wvobject>
+         <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_d_i[2][0]" type="array">
+            <obj_property name="ElementShortName">[0][63:0]</obj_property>
+            <obj_property name="ObjectShortName">[0][63:0]</obj_property>
+            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_d_i[1]" type="array">
+         <obj_property name="ElementShortName">[1][1:0][63:0]</obj_property>
+         <obj_property name="ObjectShortName">[1][1:0][63:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="isExpanded"></obj_property>
+         <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_d_i[1][1]" type="array">
+            <obj_property name="ElementShortName">[1][63:0]</obj_property>
+            <obj_property name="ObjectShortName">[1][63:0]</obj_property>
+            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         </wvobject>
+         <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_d_i[1][0]" type="array">
+            <obj_property name="ElementShortName">[0][63:0]</obj_property>
+            <obj_property name="ObjectShortName">[0][63:0]</obj_property>
+            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_d_i[0]" type="array">
+         <obj_property name="ElementShortName">[0][1:0][63:0]</obj_property>
+         <obj_property name="ObjectShortName">[0][1:0][63:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="isExpanded"></obj_property>
+         <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_d_i[0][1]" type="array">
+            <obj_property name="ElementShortName">[1][63:0]</obj_property>
+            <obj_property name="ObjectShortName">[1][63:0]</obj_property>
+            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         </wvobject>
+         <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_d_i[0][0]" type="array">
+            <obj_property name="ElementShortName">[0][63:0]</obj_property>
+            <obj_property name="ObjectShortName">[0][63:0]</obj_property>
+            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         </wvobject>
+      </wvobject>
    </wvobject>
    <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_d_o" type="array">
       <obj_property name="ElementShortName">comp_data_d_o[1:0][5:0][63:0]</obj_property>
       <obj_property name="ObjectShortName">comp_data_d_o[1:0][5:0][63:0]</obj_property>
       <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
       <obj_property name="isExpanded"></obj_property>
+      <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_d_o[1]" type="array">
+         <obj_property name="ElementShortName">[1][5:0][63:0]</obj_property>
+         <obj_property name="ObjectShortName">[1][5:0][63:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="isExpanded"></obj_property>
+         <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_d_o[1][5]" type="array">
+            <obj_property name="ElementShortName">[5][63:0]</obj_property>
+            <obj_property name="ObjectShortName">[5][63:0]</obj_property>
+            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         </wvobject>
+         <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_d_o[1][4]" type="array">
+            <obj_property name="ElementShortName">[4][63:0]</obj_property>
+            <obj_property name="ObjectShortName">[4][63:0]</obj_property>
+            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         </wvobject>
+         <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_d_o[1][3]" type="array">
+            <obj_property name="ElementShortName">[3][63:0]</obj_property>
+            <obj_property name="ObjectShortName">[3][63:0]</obj_property>
+            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         </wvobject>
+         <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_d_o[1][2]" type="array">
+            <obj_property name="ElementShortName">[2][63:0]</obj_property>
+            <obj_property name="ObjectShortName">[2][63:0]</obj_property>
+            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         </wvobject>
+         <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_d_o[1][1]" type="array">
+            <obj_property name="ElementShortName">[1][63:0]</obj_property>
+            <obj_property name="ObjectShortName">[1][63:0]</obj_property>
+            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         </wvobject>
+         <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_d_o[1][0]" type="array">
+            <obj_property name="ElementShortName">[0][63:0]</obj_property>
+            <obj_property name="ObjectShortName">[0][63:0]</obj_property>
+            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_d_o[0]" type="array">
+         <obj_property name="ElementShortName">[0][5:0][63:0]</obj_property>
+         <obj_property name="ObjectShortName">[0][5:0][63:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="isExpanded"></obj_property>
+         <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_d_o[0][5]" type="array">
+            <obj_property name="ElementShortName">[5][63:0]</obj_property>
+            <obj_property name="ObjectShortName">[5][63:0]</obj_property>
+            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         </wvobject>
+         <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_d_o[0][4]" type="array">
+            <obj_property name="ElementShortName">[4][63:0]</obj_property>
+            <obj_property name="ObjectShortName">[4][63:0]</obj_property>
+            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         </wvobject>
+         <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_d_o[0][3]" type="array">
+            <obj_property name="ElementShortName">[3][63:0]</obj_property>
+            <obj_property name="ObjectShortName">[3][63:0]</obj_property>
+            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         </wvobject>
+         <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_d_o[0][2]" type="array">
+            <obj_property name="ElementShortName">[2][63:0]</obj_property>
+            <obj_property name="ObjectShortName">[2][63:0]</obj_property>
+            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         </wvobject>
+         <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_d_o[0][1]" type="array">
+            <obj_property name="ElementShortName">[1][63:0]</obj_property>
+            <obj_property name="ObjectShortName">[1][63:0]</obj_property>
+            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         </wvobject>
+         <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_d_o[0][0]" type="array">
+            <obj_property name="ElementShortName">[0][63:0]</obj_property>
+            <obj_property name="ObjectShortName">[0][63:0]</obj_property>
+            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         </wvobject>
+      </wvobject>
    </wvobject>
    <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_data_index_d_o" type="array">
       <obj_property name="ElementShortName">comp_data_index_d_o[1:0][7:0]</obj_property>
@@ -304,6 +583,7 @@
    <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/fifo_wr_en_d_c" type="array">
       <obj_property name="ElementShortName">fifo_wr_en_d_c[1:0]</obj_property>
       <obj_property name="ObjectShortName">fifo_wr_en_d_c[1:0]</obj_property>
+      <obj_property name="isExpanded"></obj_property>
    </wvobject>
    <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/fifo_wr_en_d_o" type="array">
       <obj_property name="ElementShortName">fifo_wr_en_d_o[1:0]</obj_property>
@@ -342,6 +622,7 @@
    <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/fifo_rd_avail_d_o" type="array">
       <obj_property name="ElementShortName">fifo_rd_avail_d_o[1:0][3:0]</obj_property>
       <obj_property name="ObjectShortName">fifo_rd_avail_d_o[1:0][3:0]</obj_property>
+      <obj_property name="isExpanded"></obj_property>
    </wvobject>
    <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/comp_done_t" type="array">
       <obj_property name="ElementShortName">comp_done_t[1:0]</obj_property>
@@ -359,37 +640,5 @@
    <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/COMP_DATA_FRAC_BITS" type="array">
       <obj_property name="ElementShortName">COMP_DATA_FRAC_BITS[31:0]</obj_property>
       <obj_property name="ObjectShortName">COMP_DATA_FRAC_BITS[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/FIFO_I_WIDTH_D_I" type="array">
-      <obj_property name="ElementShortName">FIFO_I_WIDTH_D_I[31:0]</obj_property>
-      <obj_property name="ObjectShortName">FIFO_I_WIDTH_D_I[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/FIFO_I_DEPTH_D_I" type="array">
-      <obj_property name="ElementShortName">FIFO_I_DEPTH_D_I[31:0]</obj_property>
-      <obj_property name="ObjectShortName">FIFO_I_DEPTH_D_I[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/FIFO_O_WIDTH_D_I" type="array">
-      <obj_property name="ElementShortName">FIFO_O_WIDTH_D_I[31:0]</obj_property>
-      <obj_property name="ObjectShortName">FIFO_O_WIDTH_D_I[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/FIFO_O_DEPTH_D_I" type="array">
-      <obj_property name="ElementShortName">FIFO_O_DEPTH_D_I[31:0]</obj_property>
-      <obj_property name="ObjectShortName">FIFO_O_DEPTH_D_I[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/FIFO_I_WIDTH_D_O" type="array">
-      <obj_property name="ElementShortName">FIFO_I_WIDTH_D_O[31:0]</obj_property>
-      <obj_property name="ObjectShortName">FIFO_I_WIDTH_D_O[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/FIFO_I_DEPTH_D_O" type="array">
-      <obj_property name="ElementShortName">FIFO_I_DEPTH_D_O[31:0]</obj_property>
-      <obj_property name="ObjectShortName">FIFO_I_DEPTH_D_O[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/FIFO_O_WIDTH_D_O" type="array">
-      <obj_property name="ElementShortName">FIFO_O_WIDTH_D_O[31:0]</obj_property>
-      <obj_property name="ObjectShortName">FIFO_O_WIDTH_D_O[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/test_ame_equation_solver/ame_equation_solver/FIFO_O_DEPTH_D_O" type="array">
-      <obj_property name="ElementShortName">FIFO_O_DEPTH_D_O[31:0]</obj_property>
-      <obj_property name="ObjectShortName">FIFO_O_DEPTH_D_O[31:0]</obj_property>
    </wvobject>
 </wave_config>
